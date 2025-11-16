@@ -1,28 +1,83 @@
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
+import { PedidosProvider } from './context/pedidosProvider.jsx';
+import PublicNavbar from './components/public/PublicNavbar.jsx';
+import AppNavbar from './components/AppNavbar.jsx';
+import Footer from './components/public/footer.jsx';
+import HomePage from './views/public/HomePage.jsx';
+import SucursalesPage from './views/public/SucursalesPage.jsx';
+import MayoristaPage from './views/public/MayoristaPage.jsx';
+import ContactoPage from './views/public/ContactoPage.jsx';
+import LoginPage from './views/auth/LoginPage.jsx';
+import MisVentasPage from './views/backoffice/MisVentasPage/MisVentasPage.jsx';
+import NuevoPedidoPage from './views/backoffice/MisVentasPage/NuevoPedido/NuevoPedido.jsx';
 
-
-import HomePage from "./views/HomePage/HomePage.jsx";
-import Navbar from "./components/Navbar.jsx";
-
-import { Routes, Route } from 'react-router-dom'; 
-
-
-import MisVentasPage from "./views/MisVentasPage/MisVentasPage.jsx"
-import ErrorPage from "./views/ErrorPage.jsx";
-import NuevoPedidoForm from "./views/NuevoPedido/NuevoPedido.jsx";
-
-
+const usuarioDemo = {
+  nombre: 'Admin Luna',
+  email: 'admin@laluna.com'
+};
 
 function App() {
+  const [user, setUser] = useState(null); // null = no logueado
+  const location = useLocation();
+
+  const handleLogout = () => {
+    setUser(null);
+  };
+
+  const isBackOffice = location.pathname.startsWith('/ventas') ||
+    location.pathname.startsWith('/nuevopedido');
+
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <>
-      <Navbar />
+    <HelmetProvider>
+      {/* Mostrar navbar público o de backoffice según la ruta */}
+      {!isLoginPage && (
+        isBackOffice ? (
+          <AppNavbar user={user} onLogout={handleLogout} />
+        ) : (
+          <PublicNavbar />
+        )
+
+      )}
+
       <Routes>
-        <Route path="/home" element={<HomePage />}/>
-        <Route path="/ventas" element={<MisVentasPage />}/>
-        <Route path="/nuevopedido" element={<NuevoPedidoForm />}/>
-        <Route path="*" element={<ErrorPage />}/>
+        {/* ===== RUTAS PÚBLICAS ===== */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/sucursales" element={<SucursalesPage />} />
+        <Route path="/mayorista" element={<MayoristaPage />} />
+        <Route path="/contacto" element={<ContactoPage />} />
+
+        {/* ===== LOGIN ===== */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* ===== RUTAS BACKOFFICE (Protegidas) ===== */}
+        <Route
+          path="/ventas"
+          element={
+            <PedidosProvider>
+              <MisVentasPage />
+            </PedidosProvider>
+          }
+        />
+        <Route
+          path="/nuevopedido"
+          element={
+            <PedidosProvider>
+              <NuevoPedidoPage />
+            </PedidosProvider>
+          }
+        />
+
+        {/* Ruta 404 - redirige al home */}
+        <Route path="*" element={<HomePage />} />
       </Routes>
-    </>
+
+      {/* Footer solo en rutas públicas */}
+      {!isBackOffice && !isLoginPage && <Footer />}
+    </HelmetProvider>
   );
 }
 

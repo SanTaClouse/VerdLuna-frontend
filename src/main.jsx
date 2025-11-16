@@ -1,14 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import "./reset.css";
+import "./styles/reset.css";
+import "./styles/public.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter } from 'react-router-dom'
-import PedidosProvider from "./context/pedidosProvider.jsx";
+import { BrowserRouter } from 'react-router-dom';
+import { PedidosProvider } from "./context/pedidosProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <PedidosProvider>
         <App />
       </PedidosProvider>

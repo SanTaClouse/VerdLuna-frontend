@@ -8,13 +8,13 @@ const AppNavbar = ({ user, onLogout }) => {
       <Container>
         {/* Logo / Marca */}
         <Navbar.Brand href="home">
-            <img
+          <img
             src={LogoLuna}
             width="130"
             alt='Logo-Luna'
-            className='d-inline-block align-top'            
-            />
-            
+            className='d-inline-block align-top'
+          />
+
         </Navbar.Brand>
 
         {/* Botón hamburguesa */}
