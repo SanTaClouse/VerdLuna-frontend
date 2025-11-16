@@ -1,160 +1,125 @@
-🌙 Verdulería La Luna – Sitio Público + Backoffice
+# 🌙 Verdulería La Luna – Sitio Público y Backoffice
 
-Frontend desarrollado con React + Vite para la presencia digital y el sistema administrativo de Verdulería La Luna.
+Este es el repositorio del **Frontend** desarrollado con **React + Vite** para la presencia digital y el sistema administrativo interno de **Verdulería La Luna**.
 
-Este proyecto incluye dos áreas principales:
+El proyecto se divide en dos áreas principales:
+1.  **Sitio Público:** Orientado a clientes y al posicionamiento local (SEO).
+2.  **Backoffice Administrativo:** Panel para la gestión interna de pedidos mayoristas.
 
-Sitio Público orientado a clientes y posicionamiento local.
+---
 
-Backoffice Administrativo para la carga y gestión de pedidos mayoristas.
+## 🚀 Objetivo del Proyecto
 
-🚀 Objetivo del Proyecto
-🥬 Sitio Público
+### 🥬 Sitio Público
 
-El sitio público busca potenciar la identidad digital de Verdulería La Luna y aumentar las ventas mayoristas mediante:
+El objetivo es potenciar la identidad digital y aumentar las ventas mayoristas, centrándose en:
 
-Mejor posicionamiento SEO local
+* **Mejor posicionamiento SEO local.**
+* Información clara de **sucursales.**
+* Presentación profesional y moderna.
+* **Formularios de contacto y cotización** funcionales.
 
-Información clara de sucursales
+### 🛠️ Backoffice Administrativo
 
-Presentación profesional
+Busca gestionar internamente los pedidos de clientes mayoristas, proporcionando un sistema **simple, centralizado** y con capacidad de **escalabilidad** futura.
 
-Formularios de contacto y cotización funcionales
+---
 
-🛠️ Backoffice
+## 🧩 Funcionalidades y Páginas
 
-El panel administrativo permite gestionar internamente los pedidos mayoristas, ofreciendo un sistema simple, centralizado y pensado para escalar junto al negocio.
+### 📄 Páginas Principales (Sitio Público)
 
-🧩 Funcionalidades del Sitio Público
-📄 Páginas principales
+| Página | Descripción |
+| :--- | :--- |
+| **HomePage** | Landing con carrusel, presentación del negocio, sección mayorista y *preview* de sucursales. |
+| **SucursalesPage** | Información detallada de las 3 sucursales (horarios, contacto, ubicación). |
+| **MayoristaPage** | Detalle del servicio, beneficios y **formulario de solicitud de cotización** (optimizado para SEO). |
+| **ContactoPage** | Formulario de contacto general y datos de comunicación. |
+| **LoginPage** | Acceso al Backoffice Administrativo. |
 
-HomePage
-Landing con carrusel, presentación del negocio, sección mayorista y preview de sucursales.
+### 🧱 Componentes Reutilizables Destacados
 
-SucursalesPage
-Información detallada de 3 sucursales: horarios, contacto y ubicación.
+El proyecto se construye con una arquitectura modular, destacándose componentes como:
 
-MayoristaPage
-Detalle del servicio, beneficios y formulario de solicitud de cotización (optimizado para SEO).
+* `PublicNavbar` (Barra de navegación)
+* `HeroCarousel` (Carrusel principal)
+* `SucursalesPreview` (Cards de sucursales)
+* `MayoristaSection` (CTA para clientes mayoristas)
+* `ContactForm` (Formulario genérico)
+* `Footer`
 
-ContactoPage
-Formulario de contacto + datos de comunicación.
+---
 
-LoginPage
-Acceso al backoffice administrativo.
+## ✨ Características Técnicas
 
-🧱 Componentes Reutilizables
+* 🎨 **Diseño:** Limpio, basado en verde, blanco y tonos neutros.
+* 📱 **Responsive:** Totalmente adaptativo (*mobile-first*).
+* 🔍 **SEO:** Optimizado con `react-helmet-async`.
+* ⚡ **UX:** Animaciones suaves con CSS.
+* 📧 **Formularios:** Listos para conectar al *backend*.
+* 🗺️ **Maps:** Integración preparada para Google Maps (`@react-google-maps/api`).
+* ♻️ **Arquitectura:** Modular y con componentes reutilizables.
+* 🧼 **Calidad:** `ESLint` configurado para buenas prácticas de desarrollo.
 
-PublicNavbar – Barra de navegación del sitio público
+---
 
-HeroCarousel – Carrusel principal
+## ⚙️ Tecnologías Utilizadas
 
-SucursalesPreview – Cards con sucursales
+### Frontend
 
-MayoristaSection – CTA para captar clientes mayoristas
+| Tecnología | Descripción |
+| :--- | :--- |
+| **React 18** | Biblioteca principal de desarrollo. |
+| **Vite** | Entorno de *build* rápido. |
+| **React Router DOM** | Enrutamiento de la aplicación. |
+| **Bootstrap + Icons** | Framework CSS y set de iconos. |
+| **Axios** | Cliente HTTP para peticiones. |
+| **Formik / Yup / React Hook Form** | Manejo y validación de formularios. |
+| **React Helmet Async** | Gestión del SEO en el lado del cliente. |
+| **@react-google-maps/api** | Integración de Google Maps. |
 
-Footer – Enlaces, contacto y redes
+### Herramientas de Desarrollo
 
-ContactForm – Formulario genérico reutilizable
+* `ESLint` (con reglas para React)
+* Plugin React SWC
+* Hot Reloading de Vite
 
-También se encuentran en desarrollo componentes auxiliares para el backoffice.
+---
 
-✨ Características Técnicas
+## 📦 Instalación y Uso
 
-🎨 Diseño limpio basado en verde, blanco y tonos neutros
+Sigue estos pasos para levantar el proyecto en tu entorno local:
 
-📱 Totalmente responsive (mobile-first)
+### 1. Clonar el repositorio
+```bash 
+git clone https://github.com/SanTaClouse/VerdLuna-frontend.git
+```
+### 2. Instalar dependencias
+```bash
+npm install
+```
+### 3. Ejecutar en modo desarrollo
+```bash
+npm run dev
+```
+### 4. Generar build de producción
+```bash
+npm run build
+```
 
-🔍 SEO optimizado con react-helmet-async
-
-⚡ Animaciones suaves con CSS
-
-📧 Formularios funcionales, listos para conectar al backend
-
-🗺️ Integración preparada para Google Maps (@react-google-maps/api)
-
-♻️ Arquitectura modular con componentes reutilizables
-
-🧼 ESLint configurado para mantener buenas prácticas
-
-🗂️ Estructura del Proyecto
+📁 Estructura del Proyecto
 src/
 ├── views/
-│   ├── public/
-│   │   ├── HomePage.jsx
-│   │   ├── SucursalesPage.jsx
-│   │   ├── MayoristaPage.jsx
-│   │   └── ContactoPage.jsx
-│   └── backoffice/
-│       └── ...
+│ ├── public/           // Páginas del Sitio Público
+│ │ ├── HomePage.jsx
+│ │ └── ...
+│ └── backoffice/       // Páginas del Panel Administrativo
+│ └── ...
 ├── components/
-│   ├── public/
-│   │   ├── PublicNavbar.jsx
-│   │   ├── Hero.jsx
-│   │   ├── Carrusel.jsx
-│   │   ├── SucursalesPreview.jsx
-│   │   ├── MayoristaSection.jsx
-│   │   ├── Footer.jsx
-│   │   └── ContactForm.jsx
-│   └── backoffice/
-│       └── ...
+│ ├── public/           // Componentes del Sitio Público
+│ │ ├── PublicNavbar.jsx
+│ │ └── ...
+│ └── backoffice/       // Componentes del Backoffice
+│ └── ...
+└── App.jsx
 
-⚙️ Tecnologías Utilizadas
-Frontend
-
-React 18
-
-Vite
-
-React Router DOM
-
-Axios
-
-Formik / Yup / React Hook Form
-
-Bootstrap + Bootstrap Icons
-
-React Helmet Async
-
-@react-google-maps/api
-
-Desarrollo
-
-ESLint (reglas para React)
-
-Plugin React SWC
-
-Hot Reloading de Vite
-
-🏃 Scripts Disponibles
-"dev": "vite"
-"build": "vite build"
-"lint": "eslint . --ext js,jsx"
-"preview": "vite preview"
-
-📦 Instalación y Uso
-
-Clonar el repositorio
-
-git clone <url-del-repo>
-
-
-Instalar dependencias
-
-npm install
-
-
-Ejecutar en modo desarrollo
-
-npm run dev
-
-
-Generar build de producción
-
-npm run build
-
-📝 Estado del Proyecto
-
-Sitio público: 90% completado
-
-Backoffice: En desarrollo (módulo de pedidos mayoristas)
