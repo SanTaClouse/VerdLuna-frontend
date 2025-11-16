@@ -1,0 +1,16 @@
+# Environment
+*.env
+*.env.development
+*.env.production
+
+# Node modules
+node_modules/
+front/node_modules
+
+# Build outputs
+dist/
+build/
+
+# System
+.DS_Store
+Thumbs.db
