@@ -108,6 +108,7 @@ npm run build
 ```
 
 📁 Estructura del Proyecto
+```bash
 src/
 ├── views/
 │ ├── public/           // Páginas del Sitio Público
@@ -122,4 +123,4 @@ src/
 │ └── backoffice/       // Componentes del Backoffice
 │ └── ...
 └── App.jsx
-
+```
