@@ -4,7 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { PedidosProvider } from './context/pedidosProvider.jsx';
 import PublicNavbar from './components/public/PublicNavbar.jsx';
 import AppNavbar from './components/AppNavbar.jsx';
-import Footer from './components/public/Footer.jsx';
+import Footer from './components/public/Footer.jsx'; //Raro
 import HomePage from './views/public/HomePage.jsx';
 import SucursalesPage from './views/public/SucursalesPage.jsx';
 import MayoristaPage from './views/public/MayoristaPage.jsx';
