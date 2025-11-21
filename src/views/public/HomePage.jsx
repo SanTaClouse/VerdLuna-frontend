@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import HeroCarousel from '../../components/public/HeroCarousel';
 import SucursalesPreview from '../../components/public/SucursalesPreview';
 import MayoristaSection from '../../components/public/MayoristaSection';
+import { motion } from 'framer-motion';
 
 const HomePage = () => {
     return (
@@ -28,43 +29,59 @@ const HomePage = () => {
             <HeroCarousel />
 
             {/* Sección de Presentación */}
-            <section className="py-5">
+            <section className="py-5 overflow-hidden">
                 <Container>
                     <Row className="align-items-center">
                         <Col lg={6} className="mb-4 mb-lg-0">
-                            <h2 className="display-5 fw-bold mb-4">
-                                Verdulería La Luna
-                            </h2>
-                            <p className="lead mb-4">
-                                Somos una empresa familiar con más de 15 años de trayectoria en Maciel, Santa Fe.
-                                Nos especializamos en ofrecer productos frescos de la mejor calidad tanto para
-                                consumo minorista como mayorista.
-                            </p>
-                            <p className="text-muted">
-                                Con <strong>3 sucursales estratégicamente ubicadas</strong> en Maciel,
-                                estamos siempre cerca para brindarte el mejor servicio. Trabajamos día a día
-                                para llevar frescura a tu mesa y a tu negocio.
-                            </p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                                whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                                transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
+                                viewport={{ once: true }}
+                            >
+                                <h2 className="display-5 fw-bold mb-4">
+                                    Verdulería La Luna
+                                </h2>
+                                <p className="lead mb-4">
+                                    Somos una empresa familiar con más de 15 años de trayectoria en Maciel, Santa Fe.
+                                    Nos especializamos en ofrecer productos frescos de la mejor calidad tanto para
+                                    consumo minorista como mayorista.
+                                </p>
+                                <p className="text-muted">
+                                    Con <strong>3 sucursales estratégicamente ubicadas</strong> en Maciel,
+                                    estamos siempre cerca para brindarte el mejor servicio. Trabajamos día a día
+                                    para llevar frescura a tu mesa y a tu negocio.
+                                </p>
+                            </motion.div>
                         </Col>
                         <Col lg={6}>
-                            <img
-                                src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop"
-                                alt="Verduras frescas"
-                                className="img-fluid rounded shadow"
-                            />
+                            <motion.div
+                                initial={{ opacity: 0, y: 50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                // Added delay: 0.2 so it appears slightly after the text
+                                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                                viewport={{ once: true }}
+                            >
+
+                                <img
+                                    src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop"
+                                    alt="Verduras frescas"
+                                    className="img-fluid rounded shadow"
+                                />
+                            </motion.div>
                         </Col>
                     </Row>
                 </Container>
-            </section>
+            </section >
 
             {/* Sección Mayorista */}
-            <MayoristaSection />
+            < MayoristaSection />
 
             {/* Preview de Sucursales */}
-            <SucursalesPreview />
+            < SucursalesPreview />
 
             {/* Sección de Valores */}
-            <section className="py-5 bg-white">
+            < section className="py-5 bg-white" >
                 <Container>
                     <div className="text-center mb-5">
                         <h2 className="display-6 fw-bold mb-3">¿Por qué elegirnos?</h2>
@@ -105,7 +122,7 @@ const HomePage = () => {
                         </Col>
                     </Row>
                 </Container>
-            </section>
+            </section >
         </>
     );
 };

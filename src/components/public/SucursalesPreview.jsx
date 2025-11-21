@@ -1,5 +1,6 @@
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const SucursalesPreview = () => {
     const sucursales = [
@@ -23,18 +24,33 @@ const SucursalesPreview = () => {
             direccion: "San Juan 810",
             whatsapp: "3425123458",
             imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&h=300&fit=crop"
+        },
+        {
+            id: 4,
+            nombre: "Luna 4",
+            direccion: "Olvieros",
+            whatsapp: "3425123458",
+            imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&h=300&fit=crop"
         }
     ];
 
     return (
         <section className="py-5 bg-light">
             <Container>
-                <div className="text-center mb-5">
-                    <h2 className="display-5 fw-bold mb-3">Nuestras Sucursales</h2>
-                    <p className="lead text-muted">
-                        3 locales en Maciel para servirte mejor
-                    </p>
-                </div>
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                    whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                    transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
+                    viewport={{ once: true }}
+                >
+
+                    <div className="text-center mb-5">
+                        <h2 className="display-5 fw-bold mb-3">Nuestras Sucursales</h2>
+                        <p className="lead text-muted">
+                            Tres locales en Maciel y 1 en Oliveros ofreciendo el mejor servicio
+                        </p>
+                    </div>
+                </motion.div>
 
                 <Row className="g-4">
                     {sucursales.map((sucursal) => (

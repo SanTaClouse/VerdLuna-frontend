@@ -44,6 +44,20 @@ const SucursalesPage = () => {
             telefono: "(03460) 123458",
             mapsUrl: "https://maps.google.com/?q=San+Juan+810+Maciel+Santa+Fe",
             imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
+        },
+        {
+            id: 3,
+            nombre: "Luna 4",
+            direccion: "Olvieros, Santa Fe",
+            horarios: {
+                lunesViernes: "7:00 - 13:00 | 16:00 - 21:00",
+                sabado: "7:00 - 13:00 | 16:00 - 21:00",
+                domingo: "8:00 - 13:00"
+            },
+            whatsapp: "3425123458",
+            telefono: "(03460) 123458",
+            mapsUrl: "https://maps.google.com/?q=Oliveros+Santa+Fe",
+            imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
         }
     ];
 
@@ -68,7 +82,7 @@ const SucursalesPage = () => {
                 <Container>
                     <h1 className="display-4 fw-bold mb-3">Nuestras Sucursales</h1>
                     <p className="lead">
-                        3 locales en Maciel para estar siempre cerca de vos
+                        3 locales en Maciel para estar siempre cerca tuyo
                     </p>
                 </Container>
             </section>
