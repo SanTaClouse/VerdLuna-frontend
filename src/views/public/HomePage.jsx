@@ -34,8 +34,8 @@ const HomePage = () => {
                     <Row className="align-items-center">
                         <Col lg={6} className="mb-4 mb-lg-0">
                             <motion.div
-                                initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
-                                whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                                initial={{ opacity: 0, x: -100 }} // Starts 50px down, transparent
+                                whileInView={{ opacity: 1, x: 0 }} // Moves up to position
                                 transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
                                 viewport={{ once: true }}
                             >
@@ -56,13 +56,11 @@ const HomePage = () => {
                         </Col>
                         <Col lg={6}>
                             <motion.div
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                // Added delay: 0.2 so it appears slightly after the text
-                                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                                initial={{ opacity: 0, x: 100 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                                 viewport={{ once: true }}
                             >
-
                                 <img
                                     src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop"
                                     alt="Verduras frescas"
@@ -83,12 +81,25 @@ const HomePage = () => {
             {/* Sección de Valores */}
             < section className="py-5 bg-white" >
                 <Container>
+                    <motion.div
+                    initial={{ opacity: 0, x: -100 }} // Starts 50px down, transparent
+                    whileInView={{ opacity: 1, x: 0 }} // Moves up to position
+                    transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
+                    viewport={{ once: true }}
+                >
                     <div className="text-center mb-5">
                         <h2 className="display-6 fw-bold mb-3">¿Por qué elegirnos?</h2>
                     </div>
+                </motion.div>
 
                     <Row className="g-4 text-center">
                         <Col md={4}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                            whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                            transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
+                            viewport={{ once: true }}
+                        >
                             <div className="p-4">
                                 <div className="display-3 mb-3">🌿</div>
                                 <h4 className="fw-bold mb-3">Productos Frescos</h4>
@@ -97,9 +108,17 @@ const HomePage = () => {
                                     la frescura de todos nuestros productos.
                                 </p>
                             </div>
+                        </motion.div>
                         </Col>
 
                         <Col md={4}>
+                        <motion.div
+                                            initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                                            whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                                            transition={{ duration: 0.8, delay:0.3 ,ease: "easeOut" }} // Smooth easing
+                                            viewport={{ once: true }}
+                                        >
+
                             <div className="p-4">
                                 <div className="display-3 mb-3">🚚</div>
                                 <h4 className="fw-bold mb-3">Envíos a Domicilio</h4>
@@ -108,9 +127,17 @@ const HomePage = () => {
                                     para tu comodidad.
                                 </p>
                             </div>
+                                        </motion.div>
                         </Col>
 
                         <Col md={4}>
+                        <motion.div
+                                            initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                                            whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                                            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }} // Smooth easing
+                                            viewport={{ once: true }}
+                                        >
+                                            
                             <div className="p-4">
                                 <div className="display-3 mb-3">💰</div>
                                 <h4 className="fw-bold mb-3">Mejores Precios</h4>
@@ -119,6 +146,7 @@ const HomePage = () => {
                                     Consultá nuestras ofertas semanales.
                                 </p>
                             </div>
+                                        </motion.div>
                         </Col>
                     </Row>
                 </Container>

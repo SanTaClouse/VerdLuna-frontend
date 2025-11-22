@@ -38,8 +38,8 @@ const SucursalesPreview = () => {
         <section className="py-5 bg-light">
             <Container>
                 <motion.div
-                    initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
-                    whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                    initial={{ opacity: 0, x: 100 }} // Starts 50px down, transparent
+                    whileInView={{ opacity: 1, x: 0 }} // Moves up to position
                     transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
                     viewport={{ once: true }}
                 >
@@ -54,14 +54,20 @@ const SucursalesPreview = () => {
 
                 <Row className="g-4">
                     {sucursales.map((sucursal) => (
-                        <Col key={sucursal.id} xs={12} md={4}>
+                        <Col key={sucursal.id} xs={12} md={3}>
+                            <motion.div
+                    initial={{ opacity: 0, y: 50 }} // Starts 50px down, transparent
+                    whileInView={{ opacity: 1, y: 0 }} // Moves up to position
+                    transition={{ duration: 0.8, ease: "easeOut" }} // Smooth easing
+                    viewport={{ once: true }}
+                >
                             <Card className="h-100 shadow-sm border-0 hover-lift">
                                 <Card.Img
                                     variant="top"
                                     src={sucursal.imagen}
                                     alt={sucursal.nombre}
                                     style={{ height: '200px', objectFit: 'cover' }}
-                                />
+                                    />
                                 <Card.Body className="text-center">
                                     <h4 className="fw-bold mb-3">🌙 {sucursal.nombre}</h4>
                                     <p className="text-muted mb-3">
@@ -72,11 +78,12 @@ const SucursalesPreview = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn btn-success w-100"
-                                    >
+                                        >
                                         <i className="bi bi-whatsapp"></i> Contactar
                                     </a>
                                 </Card.Body>
                             </Card>
+                        </motion.div>
                         </Col>
                     ))}
                 </Row>

@@ -7,7 +7,7 @@ const HeroCarousel = () => {
             id: 1,
             title: "Verdulería La Luna",
             subtitle: "Frescura y calidad en Maciel, Santa Fe",
-            description: "3 sucursales para servirte mejor",
+            description: "4 sucursales para servirte ",
             image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=600&fit=crop",
             cta: { text: "Ver sucursales", link: "/sucursales" }
         },
