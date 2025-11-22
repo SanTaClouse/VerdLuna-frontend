@@ -24,7 +24,9 @@ const AppNavbar = ({ user, onLogout }) => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/ventas">Ventas</Nav.Link>
+            <Nav.Link href="/clientes">Clientes</Nav.Link>
             <Nav.Link href="/nuevopedido">Agregar Pedido</Nav.Link>
+            <Nav.Link href="/nuevocliente">Agregar Cliente</Nav.Link>
           </Nav>
 
           <Nav>
