@@ -1,6 +1,8 @@
-import { Container, Card, Button, Spinner, Alert, Badge } from 'react-bootstrap';
-import { useContext } from 'react';
+import { Container, Card, Spinner, Alert, Badge } from 'react-bootstrap';
+import { useContext, useState } from 'react';
 import PedidosContext from '../../context/pedidosProvider';
+import PedidoCard from './pedidoCard';
+import PedidoModal from './PedidoModal';
 
 const PedidoCards = () => {
   const {
@@ -10,6 +12,10 @@ const PedidoCards = () => {
     actualizarEstadoPago
   } = useContext(PedidosContext);
 
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Agrupar pedidos por fecha
   const pedidosPorFecha = pedidosFiltrados.reduce((acc, pedido) => {
     const fecha = pedido.fecha;
     if (!acc[fecha]) acc[fecha] = [];
@@ -17,9 +23,25 @@ const PedidoCards = () => {
     return acc;
   }, {});
 
+  // Ordenar fechas de más reciente a más antigua
   const fechasOrdenadas = Object.keys(pedidosPorFecha).sort((a, b) =>
     new Date(b) - new Date(a)
   );
+
+  const formatearFecha = (fecha) => {
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR', opciones);
+  };
+
+  const handleClickPedido = (pedido) => {
+    setPedidoSeleccionado(pedido);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setPedidoSeleccionado(null);
+  };
 
   const handleMarcarPago = async (pedidoId) => {
     const confirmacion = window.confirm('¿Marcar este pedido como pago completo?');
@@ -33,11 +55,7 @@ const PedidoCards = () => {
     }
   };
 
-  const formatearFecha = (fecha) => {
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR', opciones);
-  };
-
+  // Estados de carga
   if (loading) {
     return (
       <Container className="text-center my-5">
@@ -69,86 +87,47 @@ const PedidoCards = () => {
   }
 
   return (
-    <Container className="mb-4">
-      {fechasOrdenadas.map((fecha) => (
-        <Card key={fecha} className="mb-3 shadow-sm">
-          <Card.Header className="bg-light">
-            <strong>{formatearFecha(fecha)}</strong>
-            <Badge bg="secondary" className="ms-2">
-              {pedidosPorFecha[fecha].length} pedido{pedidosPorFecha[fecha].length > 1 ? 's' : ''}
-            </Badge>
-          </Card.Header>
-          <Card.Body className="p-2">
-            {pedidosPorFecha[fecha].map((pedido) => {
-              const restante = pedido.precio - pedido.precioAbonado;
-              const isPago = pedido.estado === 'Pago';
-
-              return (
-                <Card
+    <>
+      <Container className="mb-4">
+        {fechasOrdenadas.map((fecha) => (
+          <Card key={fecha} className="mb-3 shadow-sm border-0">
+            <Card.Header className="bg-light border-0">
+              <div className="d-flex justify-content-between align-items-center">
+                <strong className="text-capitalize">{formatearFecha(fecha)}</strong>
+                <Badge bg="secondary" pill>
+                  {pedidosPorFecha[fecha].length}
+                </Badge>
+              </div>
+            </Card.Header>
+            <Card.Body className="p-2">
+              {pedidosPorFecha[fecha].map((pedido) => (
+                <PedidoCard
                   key={pedido.id}
-                  className="mb-2"
-                  style={{
-                    backgroundColor: isPago ? '#d4edda' : '#f8d7da',
-                    borderLeft: `4px solid ${isPago ? '#28a745' : '#dc3545'}`
-                  }}
-                >
-                  <Card.Body>
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <div>
-                        <Card.Title className="mb-1">
-                          {pedido.cliente}
-                          <Badge
-                            bg={isPago ? 'success' : 'danger'}
-                            className="ms-2"
-                          >
-                            {pedido.estado}
-                          </Badge>
-                        </Card.Title>
-                        <Card.Text className="text-muted small mb-0">
-                          ID: {pedido.id}
-                        </Card.Text>
-                      </div>
-                    </div>
+                  pedido={pedido}
+                  onClick={handleClickPedido}
+                />
+              ))}
+            </Card.Body>
+          </Card>
+        ))}
 
-                    <Card.Text className="mb-2">
-                      <small>{pedido.descripcion}</small>
-                    </Card.Text>
+        {/* Indicador de cantidad total */}
+        <div className="text-center mt-3">
+          <small className="text-muted">
+            <i className="bi bi-receipt me-1"></i>
+            {pedidosFiltrados.length} pedido{pedidosFiltrados.length !== 1 ? 's' : ''} en total
+          </small>
+        </div>
+      </Container>
 
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>Total: ${pedido.precio.toFixed(2)}</strong>
-                        <br />
-                        <span className="text-muted">
-                          Abonado: ${pedido.precioAbonado.toFixed(2)}
-                        </span>
-                        {restante > 0 && (
-                          <>
-                            <br />
-                            <span className="text-danger">
-                              Restante: ${restante.toFixed(2)}
-                            </span>
-                          </>
-                        )}
-                      </div>
-
-                      {!isPago && (
-                        <Button
-                          variant="success"
-                          size="sm"
-                          onClick={() => handleMarcarPago(pedido.id)}
-                        >
-                          Marcar como pago
-                        </Button>
-                      )}
-                    </div>
-                  </Card.Body>
-                </Card>
-              );
-            })}
-          </Card.Body>
-        </Card>
-      ))}
-    </Container>
+      {/* Modal de detalle */}
+      <PedidoModal
+        show={showModal}
+        onHide={handleCloseModal}
+        pedido={pedidoSeleccionado}
+        onMarcarPago={handleMarcarPago}
+      />
+    </>
   );
 };
 

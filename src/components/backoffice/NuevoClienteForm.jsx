@@ -3,7 +3,7 @@ import { Form, Button, Container, Card, Alert, Row, Col } from "react-bootstrap"
 import ClientesContext from "../../context/clientesProvider";
 import { useNavigate } from "react-router-dom";
 
-const NuevoClienteForm = () => {
+const NuevoClienteForm = ({ onSuccess }) => {
     const { agregarCliente } = useContext(ClientesContext);
     const navigate = useNavigate();
 
@@ -56,6 +56,11 @@ const NuevoClienteForm = () => {
 
                 // Scroll hacia arriba para ver el nuevo cliente
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Cerrar formulario si existe el callback
+                setTimeout(() => {
+                    if (onSuccess) onSuccess();
+                }, 1500);
 
             } else {
                 setMensaje({
