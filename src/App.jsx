@@ -2,9 +2,9 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Context Providers
-import { AuthProvider } from './context/AuthContext';
-import { PedidosProvider } from './context/PedidosContext';
-import { ClientesProvider } from './context/ClientesContext';
+import { AuthProvider } from './context/AuthProvider'
+import { PedidosProvider } from './context/PedidosProvider'
+import { ClientesProvider } from './context/ClientesProvider';
 
 // Componentes de autenticación
 import PrivateRoute from './components/auth/PrivateRoute';

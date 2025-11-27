@@ -4,8 +4,8 @@ import {
     Container, Row, Col, Card, Button, Form, Alert,
     Badge, Spinner, Tab, Tabs, Table
 } from 'react-bootstrap';
-import ClientesContext from '../../../../context/clientesContext';
-import PedidosContext from '../../../../context/pedidosContext';
+import ClientesContext from '../../../../context/ClientesProvider';
+import PedidosContext from '../../../../context/PedidosProvider';
 
 const ClienteDetallePage = () => {
     const { id } = useParams();

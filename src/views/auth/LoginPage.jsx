@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthProvider';
 
 const LoginPage = () => {
     const navigate = useNavigate();

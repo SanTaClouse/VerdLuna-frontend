@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { Form, Button, Container, Card, Alert, Row, Col } from "react-bootstrap";
-import ClientesContext from "../../context/clientesContext";
+import ClientesContext from "../../context/ClientesProvider";
 import { useNavigate } from "react-router-dom";
 
 const NuevoClienteForm = ({ onSuccess }) => {

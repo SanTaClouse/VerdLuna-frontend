@@ -1,6 +1,6 @@
 import { Navbar, Container, Nav, NavDropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthProvider';
 import LogoLuna from "../assets/laluna-logo.png";
 
 const AppNavbar = () => {

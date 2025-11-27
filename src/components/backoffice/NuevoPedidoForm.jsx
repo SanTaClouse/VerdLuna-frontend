@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { Form, Button, Container, Row, Col, Card, Alert } from "react-bootstrap";
-import PedidosContext from "../../context/pedidosContext";
+import PedidosContext from "../../context/PedidosProvider";
 import { useNavigate } from "react-router-dom";
 
 const NuevoPedidoForm = () => {
