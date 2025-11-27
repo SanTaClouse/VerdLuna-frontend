@@ -1,4 +1,5 @@
-import NuevoClienteForm from "../../../../components/backoffice/NuevoClienteForm";
+import Clientes from "../../components/backoffice/Clientes";
+import NuevoClienteForm from "../../components/backoffice/NuevoClienteForm";
 
 const ClientesPage = () => {
   return (

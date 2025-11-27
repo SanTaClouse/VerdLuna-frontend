@@ -13,7 +13,7 @@ import LoginPage from './views/auth/LoginPage.jsx';
 import MisVentasPage from './views/backoffice/MisVentasPage/MisVentasPage.jsx';
 import NuevoPedidoPage from './views/backoffice/MisVentasPage/NuevoPedido/NuevoPedido.jsx';
 import { ClientesProvider } from './context/clientesProvider.jsx';
-import ClientesPage from './views/backoffice/MisVentasPage/NuevoCliente/Clientes.jsx';
+import ClientesPage from './views/backoffice/ClientesPage.jsx';
 
 const usuarioDemo = {
   nombre: 'Admin Luna',
