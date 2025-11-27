@@ -1,167 +1,126 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
-// import pedidosBD from '../helpers/pedidos';
+import clientesMock from '../helpers/clientesMock';
 
 const ClientesContext = createContext();
 
 export const ClientesProvider = ({ children }) => {
-    const [pedidos, setPedidos] = useState([]);
-    const [clientesUnicos, setClientesUnicos] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [filtros, setFiltros] = useState({
-        cliente: 'todos',
-        estado: 'todos',
-        fechaDesde: '',
-        fechaHasta: ''
-    });
-
+    // Cargar clientes al montar
     useEffect(() => {
-        cargarPedidos();
+        cargarClientes();
     }, []);
 
-    const cargarPedidos = async () => {
+    // Función para cargar clientes
+    const cargarClientes = async () => {
         setLoading(true);
         setError(null);
 
         try {
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // setPedidos(pedidosBD);
+            // TODO: Reemplazar con fetch real
+            // const response = await axios.get('http://localhost:3000/api/clientes');
+            // setClientes(response.data);
 
-            const clientesMap = new Map();
-            // pedidosBD.forEach(p => {
-            //     if (p.clienteId && !clientesMap.has(p.clienteId)) {
-            //         clientesMap.set(p.clienteId, {
-            //             id: p.clienteId,
-            //             nombre: p.cliente
-            //         });
-            //     }
-            // });
-            setClientesUnicos(Array.from(clientesMap.values()));
+            setClientes(clientesMock);
 
         } catch (err) {
-            setError('Error al cargar pedidos');
+            setError('Error al cargar clientes');
             console.error(err);
         } finally {
             setLoading(false);
         }
     };
 
-    const agregarPedido = async (pedidoData) => {
+    // Obtener cliente por ID
+    const obtenerClientePorId = useCallback((id) => {
+        return clientes.find(c => c.id === id);
+    }, [clientes]);
+
+    // Agregar nuevo cliente
+    const agregarCliente = async (clienteData) => {
         try {
-            const nuevoPedido = {
-                id: Date.now(),
-                timestamp: new Date().toISOString(),
-                ...pedidoData
+            // TODO: POST al backend
+            const nuevoCliente = {
+                id: `c${Date.now()}`,
+                ...clienteData,
+                totalFacturado: 0,
+                cantidadPedidos: 0,
+                ultimoPedido: null,
+                fechaRegistro: new Date().toISOString().split('T')[0]
             };
 
-            setPedidos(prev => [nuevoPedido, ...prev]);
-            return { success: true, pedido: nuevoPedido };
+            setClientes(prev => [nuevoCliente, ...prev]);
+            return { success: true, cliente: nuevoCliente };
 
         } catch (err) {
-            console.error('Error al agregar pedido:', err);
+            console.error('Error al agregar cliente:', err);
             return { success: false, error: err.message };
         }
     };
 
-    const actualizarEstadoPago = async (pedidoId) => {
+    // Actualizar cliente
+    const actualizarCliente = async (id, datosActualizados) => {
         try {
-            setPedidos(prev =>
-                prev.map(p =>
-                    p.id === pedidoId
-                        ? { ...p, estado: 'Pago', precioAbonado: p.precio }
-                        : p
-                )
+            // TODO: PATCH al backend
+            setClientes(prev =>
+                prev.map(c => c.id === id ? { ...c, ...datosActualizados } : c)
             );
 
             return { success: true };
 
         } catch (err) {
-            console.error('Error al actualizar estado:', err);
+            console.error('Error al actualizar cliente:', err);
             return { success: false, error: err.message };
         }
     };
 
-    const actualizarAbonoParcial = async (pedidoId, nuevoAbono) => {
+    // Eliminar cliente
+    const eliminarCliente = async (id) => {
         try {
-            setPedidos(prev =>
-                prev.map(p => {
-                    if (p.id === pedidoId) {
-                        const totalAbonado = parseFloat(nuevoAbono);
-                        const esPagoCompleto = totalAbonado >= p.precio;
-
-                        return {
-                            ...p,
-                            precioAbonado: totalAbonado,
-                            estado: esPagoCompleto ? 'Pago' : 'Impago'
-                        };
-                    }
-                    return p;
-                })
-            );
-
+            // TODO: DELETE al backend
+            setClientes(prev => prev.filter(c => c.id !== id));
             return { success: true };
 
         } catch (err) {
-            console.error('Error al actualizar abono:', err);
+            console.error('Error al eliminar cliente:', err);
             return { success: false, error: err.message };
         }
     };
 
-    const pedidosFiltrados = useCallback(() => {
-        return pedidos.filter(pedido => {
-            if (filtros.cliente !== 'todos' && pedido.cliente !== filtros.cliente) {
-                return false;
-            }
+    // Clientes ordenados por total facturado (mayor a menor)
+    const clientesOrdenados = useCallback(() => {
+        return [...clientes].sort((a, b) => b.totalFacturado - a.totalFacturado);
+    }, [clientes]);
 
-            if (filtros.estado !== 'todos' && pedido.estado !== filtros.estado) {
-                return false;
-            }
-
-            if (filtros.fechaDesde && pedido.fecha < filtros.fechaDesde) {
-                return false;
-            }
-
-            if (filtros.fechaHasta && pedido.fecha > filtros.fechaHasta) {
-                return false;
-            }
-
-            return true;
-        });
-    }, [pedidos, filtros]);
-
+    // Estadísticas generales
     const estadisticas = useCallback(() => {
-        const filtrados = pedidosFiltrados();
-
-        const totalVentas = filtrados.reduce((sum, p) => sum + p.precio, 0);
-        const totalCobrado = filtrados.reduce((sum, p) => sum + p.precioAbonado, 0);
-        const totalPendiente = totalVentas - totalCobrado;
-        const cantidadPagos = filtrados.filter(p => p.estado === 'Pago').length;
-        const cantidadImpagos = filtrados.filter(p => p.estado === 'Impago').length;
+        const total = clientes.reduce((sum, c) => sum + c.totalFacturado, 0);
+        const promedio = clientes.length > 0 ? total / clientes.length : 0;
 
         return {
-            totalVentas,
-            totalCobrado,
-            totalPendiente,
-            cantidadPagos,
-            cantidadImpagos,
-            cantidadTotal: filtrados.length
+            totalClientes: clientes.length,
+            facturacionTotal: total,
+            promedioFacturacion: promedio,
+            clienteTop: clientes.reduce((max, c) =>
+                c.totalFacturado > max.totalFacturado ? c : max
+                , clientes[0] || {})
         };
-    }, [pedidosFiltrados]);
+    }, [clientes]);
 
     const value = {
-        pedidos,
-        clientesUnicos,
+        clientes,
         loading,
         error,
-        filtros,
-        setFiltros,
-        cargarPedidos,
-        agregarPedido,
-        actualizarEstadoPago,
-        actualizarAbonoParcial,
-        pedidosFiltrados: pedidosFiltrados(),
+        cargarClientes,
+        obtenerClientePorId,
+        agregarCliente,
+        actualizarCliente,
+        eliminarCliente,
+        clientesOrdenados: clientesOrdenados(),
         estadisticas: estadisticas()
     };
 
