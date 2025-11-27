@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import PedidosContext from '../../context/pedidosProvider';
+import PedidosContext from '../../context/pedidosContext';
 
 const Estadisticas = () => {
     const { estadisticas, pedidosFiltrados } = useContext(PedidosContext);

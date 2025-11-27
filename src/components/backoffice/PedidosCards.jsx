@@ -1,6 +1,6 @@
 import { Container, Card, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useContext, useState } from 'react';
-import PedidosContext from '../../context/pedidosProvider';
+import PedidosContext from '../../context/pedidosContext';
 import PedidoCard from './pedidoCard';
 import PedidoModal from './pedidoModal';
 

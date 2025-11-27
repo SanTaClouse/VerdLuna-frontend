@@ -5,7 +5,6 @@ import "./styles/reset.css";
 import "./styles/public.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter } from 'react-router-dom';
-import { PedidosProvider } from "./context/pedidosProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -15,9 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         v7_relativeSplatPath: true
       }}
     >
-      <PedidosProvider>
-        <App />
-      </PedidosProvider>
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );

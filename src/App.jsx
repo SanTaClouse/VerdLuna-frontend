@@ -1,61 +1,50 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Context Providers
-import { PedidosProvider } from './context/pedidosProvider.jsx';
-import { ClientesProvider } from './context/clientesProvider.jsx';
+import { AuthProvider } from './context/AuthContext';
+import { PedidosProvider } from './context/PedidosContext';
+import { ClientesProvider } from './context/ClientesContext';
+
+// Componentes de autenticación
+import PrivateRoute from './components/auth/PrivateRoute';
+import PublicRoute from './components/auth/PublicRoute';
 
 // Layouts
-import PublicNavbar from './components/public/PublicNavbar.jsx';
-import AppNavbar from './components/AppNavbar.jsx';
-import Footer from './components/public/Footer.jsx';
+import PublicNavbar from './components/public/PublicNavbar';
+import AppNavbar from './components/AppNavbar';
+import Footer from './components/public/Footer';
 
 // Views Públicas
-import HomePage from './views/public/HomePage.jsx';
-import SucursalesPage from './views/public/SucursalesPage.jsx';
-import MayoristaPage from './views/public/MayoristaPage.jsx';
-import ContactoPage from './views/public/ContactoPage.jsx';
-import LoginPage from './views/auth/LoginPage.jsx';
+import HomePage from './views/public/HomePage';
+import SucursalesPage from './views/public/SucursalesPage';
+import MayoristaPage from './views/public/MayoristaPage';
+import ContactoPage from './views/public/ContactoPage';
+import LoginPage from './views/auth/LoginPage';
 
 // Views BackOffice
-import MisVentasPage from './views/backoffice/MisVentasPage/Pedidos/MisVentasPage.jsx';
-import NuevoPedidoPage from './views/backoffice/MisVentasPage/Pedidos/NuevoPedido.jsx';
-import ClientesPage from './views/backoffice/MisVentasPage/Clientes/ClientesPage.jsx';
-import ClienteDetallePage from './views/backoffice/MisVentasPage/Clientes/ClienteDetallePage.jsx';
+import MisVentasPage from './views/backoffice/MisVentasPage/Pedidos/MisVentasPage';
+import NuevoPedidoPage from './views/backoffice/MisVentasPage/Pedidos/NuevoPedido';
+import ClientesPage from './views/backoffice/MisVentasPage/Clientes/ClientesPage';
+import ClienteDetallePage from './views/backoffice/MisVentasPage/Clientes/ClienteDetallePage';
 
-// Usuario de prueba
-const usuarioDemo = {
-  nombre: 'Admin Luna',
-  email: 'admin@laluna.com'
-};
+// Página 404
+import NotFoundPage from './views/NotFoundPage';
 
-function App() {
-  const [user, setUser] = useState(usuarioDemo); // Cambiar a null cuando tengas login real
+function AppContent() {
   const location = useLocation();
 
-  const handleLogout = () => {
-    setUser(null);
-  };
-
-  // Determinar si estamos en una ruta del backoffice
+  // Determinar tipo de ruta
   const isBackOffice = location.pathname.startsWith('/ventas') ||
     location.pathname.startsWith('/nuevopedido') ||
     location.pathname.startsWith('/clientes');
-
-  // Determinar si estamos en login
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <HelmetProvider>
-
-      {/* Navbar: público o backoffice según la ruta */}
+    <>
+      {/* Navbar según el tipo de ruta */}
       {!isLoginPage && (
-        isBackOffice ? (
-          <AppNavbar user={user} onLogout={handleLogout} />
-        ) : (
-          <PublicNavbar />
-        )
+        isBackOffice ? <AppNavbar /> : <PublicNavbar />
       )}
 
       <Routes>
@@ -65,54 +54,79 @@ function App() {
         <Route path="/mayorista" element={<MayoristaPage />} />
         <Route path="/contacto" element={<ContactoPage />} />
 
-        {/* ===== LOGIN ===== */}
-        <Route path="/login" element={<LoginPage />} />
+        {/* ===== LOGIN (redirige si ya está logueado) ===== */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
 
-        {/* ===== RUTAS BACKOFFICE - VENTAS ===== */}
+        {/* ===== RUTAS BACKOFFICE - PROTEGIDAS ===== */}
         <Route
           path="/ventas"
           element={
-            <PedidosProvider>
-              <MisVentasPage />
-            </PedidosProvider>
+            <PrivateRoute>
+              <PedidosProvider>
+                <MisVentasPage />
+              </PedidosProvider>
+            </PrivateRoute>
           }
         />
+
         <Route
           path="/nuevopedido"
           element={
-            <PedidosProvider>
-              <NuevoPedidoPage />
-            </PedidosProvider>
+            <PrivateRoute>
+              <PedidosProvider>
+                <NuevoPedidoPage />
+              </PedidosProvider>
+            </PrivateRoute>
           }
         />
 
-        {/* ===== RUTAS BACKOFFICE - CLIENTES ===== */}
         <Route
           path="/clientes"
           element={
-            <ClientesProvider>
-              <ClientesPage />
-            </ClientesProvider>
-          }
-        />
-        <Route
-          path="/clientes/:id"
-          element={
-            <ClientesProvider>
-              <PedidosProvider>
-                <ClienteDetallePage />
-              </PedidosProvider>
-            </ClientesProvider>
+            <PrivateRoute>
+              <ClientesProvider>
+                <ClientesPage />
+              </ClientesProvider>
+            </PrivateRoute>
           }
         />
 
-        {/* Ruta 404 - redirige al home */}
-        <Route path="*" element={<HomePage />} />
+        <Route
+          path="/clientes/:id"
+          element={
+            <PrivateRoute>
+              <ClientesProvider>
+                <PedidosProvider>
+                  <ClienteDetallePage />
+                </PedidosProvider>
+              </ClientesProvider>
+            </PrivateRoute>
+          }
+        />
+
+        {/* ===== 404 ===== */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       {/* Footer solo en rutas públicas */}
       {!isBackOffice && !isLoginPage && <Footer />}
+    </>
+  );
+}
 
+function App() {
+  return (
+    <HelmetProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </HelmetProvider>
   );
 }

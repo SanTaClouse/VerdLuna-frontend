@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import PedidosContext from '../../context/pedidosProvider';
+import PedidosContext from '../../context/pedidosContext';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 
 const Filtros = () => {

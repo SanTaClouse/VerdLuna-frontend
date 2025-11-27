@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { Container, Spinner, Alert, Form, InputGroup } from 'react-bootstrap';
-import ClientesContext from '../../context/clientesProvider';
+import ClientesContext from '../../context/clientesContext';
 import ClienteCard from './ClienteCard';
 import ClienteModal from './ClienteModal';
 

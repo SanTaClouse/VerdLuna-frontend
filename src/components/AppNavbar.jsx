@@ -1,8 +1,17 @@
-import { Navbar, Container, Nav, NavDropdown, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Navbar, Container, Nav, NavDropdown, Button, Spinner } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import LogoLuna from "../assets/laluna-logo.png";
 
-const AppNavbar = ({ user, onLogout }) => {
+const AppNavbar = () => {
+  const { user, logout, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <Navbar bg="white" variant="light" expand="sm" collapseOnSelect className="shadow-sm">
       <Container>
@@ -34,15 +43,31 @@ const AppNavbar = ({ user, onLogout }) => {
           </Nav>
 
           <Nav>
-            {user ? (
-              <NavDropdown title={user.nombre} id="user-dropdown" align="end">
-                <NavDropdown.Item onClick={onLogout}>
+            {loading ? (
+              <Spinner animation="border" size="sm" variant="success" />
+            ) : user ? (
+              <NavDropdown
+                title={
+                  <>
+                    <i className="bi bi-person-circle me-1"></i>
+                    {user.nombre || user.usuario || 'Usuario'}
+                  </>
+                }
+                id="user-dropdown"
+                align="end"
+              >
+                <NavDropdown.Header>
+                  <small className="text-muted">{user.email}</small>
+                </NavDropdown.Header>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>
                   <i className="bi bi-box-arrow-right me-2"></i>
                   Cerrar sesión
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <Button variant="dark" as={Link} to="/login">
+              <Button variant="success" as={Link} to="/login">
+                <i className="bi bi-box-arrow-in-right me-1"></i>
                 Iniciar sesión
               </Button>
             )}
