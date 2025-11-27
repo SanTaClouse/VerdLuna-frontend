@@ -1,0 +1,16 @@
+# Verdulería La Luna - robots.txt
+# Este archivo le dice a Google qué puede y no puede indexar
+
+User-agent: *
+Allow: /
+Allow: /sucursales
+Allow: /mayorista
+Allow: /contacto
+
+# Bloquear páginas privadas del backoffice
+Disallow: /ventas
+Disallow: /nuevopedido
+Disallow: /login
+
+# Ubicación del sitemap
+Sitemap: https://TU-DOMINIO.vercel.app/sitemap.xml

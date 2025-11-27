@@ -1,11 +1,12 @@
 import NuevoClienteForm from "../../../../components/backoffice/NuevoClienteForm";
 
-const NuevoClientePage = () => {
+const ClientesPage = () => {
   return (
     <div className="container-fluid">
+      <Clientes />
       <NuevoClienteForm />
     </div>
   );
 };
 
-export default NuevoClientePage;
+export default ClientesPage;

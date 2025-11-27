@@ -12,8 +12,8 @@ import ContactoPage from './views/public/ContactoPage.jsx';
 import LoginPage from './views/auth/LoginPage.jsx';
 import MisVentasPage from './views/backoffice/MisVentasPage/MisVentasPage.jsx';
 import NuevoPedidoPage from './views/backoffice/MisVentasPage/NuevoPedido/NuevoPedido.jsx';
-import NuevoClientePage from './views/backoffice/MisVentasPage/NuevoCliente/NuevoCliente.jsx';
 import { ClientesProvider } from './context/clientesProvider.jsx';
+import ClientesPage from './views/backoffice/MisVentasPage/NuevoCliente/Clientes.jsx';
 
 const usuarioDemo = {
   nombre: 'Admin Luna',
@@ -29,7 +29,7 @@ function App() {
   };
 
   const isBackOffice = location.pathname.startsWith('/ventas') ||
-    location.pathname.startsWith('/nuevopedido') || location.pathname.startsWith('/clientes') || location.pathname.startsWith('/nuevocliente') ;
+    location.pathname.startsWith('/nuevopedido') || location.pathname.startsWith('/clientes') || location.pathname.startsWith('/nuevocliente');
 
   const isLoginPage = location.pathname === '/login';
 
@@ -72,11 +72,11 @@ function App() {
             </PedidosProvider>
           }
         />
-<Route
+        <Route
           path="/nuevocliente"
           element={
             <ClientesProvider>
-              <NuevoClientePage />
+              <ClientesPage />
             </ClientesProvider>
           }
         />
