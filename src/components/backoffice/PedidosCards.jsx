@@ -2,7 +2,7 @@ import { Container, Card, Spinner, Alert, Badge } from 'react-bootstrap';
 import { useContext, useState } from 'react';
 import PedidosContext from '../../context/pedidosProvider';
 import PedidoCard from './pedidoCard';
-import PedidoModal from './PedidoModal';
+import PedidoModal from './pedidoModal';
 
 const PedidoCards = () => {
   const {
