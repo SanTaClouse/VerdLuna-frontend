@@ -1,5 +1,5 @@
-import { useState, useContext } from "react"; 
-import { Form, Button, Container, Card, Alert } from "react-bootstrap";
+import { useState, useContext } from "react";
+import { Form, Button, Container, Card, Alert, Row, Col } from "react-bootstrap";
 import ClientesContext from "../../context/clientesProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -28,7 +28,7 @@ const NuevoClienteForm = () => {
         setEnviando(true);
         setMensaje({ tipo: '', texto: '' });
 
-        const ClienteData = {
+        const clienteData = {
             nombre: form.nombre,
             direccion: form.direccion,
             descripcion: form.descripcion,
@@ -37,14 +37,15 @@ const NuevoClienteForm = () => {
         };
 
         try {
-            const resultado = await agregarCliente(ClienteData);
+            const resultado = await agregarCliente(clienteData);
 
             if (resultado.success) {
                 setMensaje({
                     tipo: 'success',
-                    texto: '✅ Cliente cargado con éxito'
+                    texto: '✅ Cliente agregado con éxito'
                 });
 
+                // Limpiar formulario
                 setForm({
                     nombre: "",
                     direccion: "",
@@ -53,9 +54,8 @@ const NuevoClienteForm = () => {
                     email: ""
                 });
 
-                setTimeout(() => {
-                    navigate('/clientes');
-                }, 1500);
+                // Scroll hacia arriba para ver el nuevo cliente
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
             } else {
                 setMensaje({
@@ -77,11 +77,14 @@ const NuevoClienteForm = () => {
 
     return (
         <Container className="my-4">
-            <Card className="shadow-sm">
-                <Card.Header className="bg-primary text-white text-center">
-                    <h4 className="mb-0">🤵‍♂️ Nuevo Cliente</h4>
+            <Card className="shadow-sm border-0">
+                <Card.Header className="bg-primary text-white">
+                    <h5 className="mb-0">
+                        <i className="bi bi-person-plus-fill me-2"></i>
+                        Nuevo Cliente
+                    </h5>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="p-4">
 
                     {mensaje.texto && (
                         <Alert
@@ -95,88 +98,99 @@ const NuevoClienteForm = () => {
 
                     <Form onSubmit={handleSubmit}>
 
+                        {/* Nombre */}
                         <Form.Group className="mb-3">
                             <Form.Label>Nombre del Cliente *</Form.Label>
                             <Form.Control
-                                as="textarea"
-                                rows={2}
+                                type="text"
                                 name="nombre"
                                 value={form.nombre}
                                 onChange={handleChange}
-                                placeholder="Ej. Verdulería El Sol"
+                                placeholder="Ej: Verdulería El Sol"
                                 required
                                 disabled={enviando}
                             />
                         </Form.Group>
 
+                        {/* Dirección */}
                         <Form.Group className="mb-3">
                             <Form.Label>Dirección *</Form.Label>
                             <Form.Control
-                                as="textarea"
-                                rows={2}
+                                type="text"
                                 name="direccion"
                                 value={form.direccion}
                                 onChange={handleChange}
-                                placeholder="Calle Ejemplo 123"
+                                placeholder="Ej: San Martín 456, Maciel"
                                 required
                                 disabled={enviando}
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3">
-                            <Form.Label>Descripción</Form.Label>
+                        {/* Teléfono y Email en fila */}
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Teléfono *</Form.Label>
+                                    <Form.Control
+                                        type="tel"
+                                        name="telefono"
+                                        value={form.telefono}
+                                        onChange={handleChange}
+                                        placeholder="3434569846"
+                                        required
+                                        disabled={enviando}
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        placeholder="cliente@ejemplo.com"
+                                        disabled={enviando}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        {/* Descripción */}
+                        <Form.Group className="mb-4">
+                            <Form.Label>Descripción / Notas</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
                                 name="descripcion"
                                 value={form.descripcion}
                                 onChange={handleChange}
-                                placeholder="Descripción del cliente"
+                                placeholder="Información adicional sobre el cliente (tipo de comercio, frecuencia de compra, etc.)"
                                 disabled={enviando}
                             />
                         </Form.Group>
 
-                        <Form.Group className="mb-3">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                placeholder="cliente@ejemplo.com"
-                                disabled={enviando}
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Teléfono *</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="telefono"
-                                value={form.telefono}
-                                onChange={handleChange}
-                                placeholder="3434569846"
-                                required
-                                disabled={enviando}
-                            />
-                        </Form.Group>
-
-                        <div className="d-grid gap-2">
+                        {/* Botón */}
+                        <div className="d-grid">
                             <Button
-                                variant="success"
+                                variant="primary"
                                 type="submit"
                                 disabled={enviando}
+                                size="lg"
                             >
-                                {enviando ? "Cargando..." : "✅ Cargar Cliente"}
-                            </Button>
-
-                            <Button
-                                variant="outline-secondary"
-                                type="button"
-                                disabled={enviando}
-                                onClick={() => navigate("/clientes")}
-                            >
-                                Cancelar
+                                {enviando ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" />
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="bi bi-check-circle me-2"></i>
+                                        Agregar Cliente
+                                    </>
+                                )}
                             </Button>
                         </div>
 
