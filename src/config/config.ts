@@ -43,7 +43,8 @@ export const ENDPOINTS = {
   PEDIDOS: {
     BASE: '/pedidos',
     BY_ID: (id: string | number) => `/pedidos/${id}`,
-    MARCAR_PAGO: (id: string | number) => `/pedidos/${id}/pago`,
+    MARCAR_PAGO: (id: string | number) => `/pedidos/${id}/marcar-pago`,
+    ACTUALIZAR_ESTADO: (id: string | number) => `/pedidos/${id}/estado`,
     POR_CLIENTE: (clienteId: string) => `/pedidos/cliente/${clienteId}`,
   },
 

@@ -92,7 +92,7 @@ const pedidosService = {
    */
   async actualizarAbono(id: string | number, nuevoAbono: number): Promise<ApiResponse<Pedido>> {
     try {
-      const response = await apiClient.patch(ENDPOINTS.PEDIDOS.BY_ID(id), {
+      const response = await apiClient.patch(ENDPOINTS.PEDIDOS.ACTUALIZAR_ESTADO(id), {
         precioAbonado: nuevoAbono
       });
       return { success: true, data: response.data.data };
