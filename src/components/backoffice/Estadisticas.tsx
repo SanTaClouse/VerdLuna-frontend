@@ -46,6 +46,12 @@ const Estadisticas = () => {
       icon: '⏳'
     },
     {
+      titulo: 'Total Pedidos',
+      valor: cantidadTotal,
+      color: 'info',
+      icon: '📦'
+    },
+    {
       titulo: 'Pedidos Pagos',
       valor: cantidadPagos,
       color: 'success',
@@ -56,12 +62,6 @@ const Estadisticas = () => {
       valor: cantidadImpagos,
       color: 'warning',
       icon: '⚠️'
-    },
-    {
-      titulo: 'Total Pedidos',
-      valor: cantidadTotal,
-      color: 'info',
-      icon: '📦'
     }
   ];
 

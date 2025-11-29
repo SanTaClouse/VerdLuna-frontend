@@ -22,13 +22,14 @@ const ClienteModal = ({ show, onHide, cliente }: ClienteModalProps) => {
   };
 
   const formatDate = (dateString: string | null): string => {
+    
     if (!dateString) return 'Sin pedidos';
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    return dateString.split('T')[0]
+    // return dateString.toLocaleDateString('es-AR', {
+    //   day: '2-digit',
+    //   month: '2-digit',
+    //   year: 'numeric'
+    // });
   };
 
   const handleVerDetalle = () => {
