@@ -20,6 +20,11 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
     }).format(amount);
   };
 
+  // Obtener nombre del cliente (puede venir como objeto o string)
+  const nombreCliente = typeof pedido.cliente === 'object'
+    ? pedido.cliente.nombre
+    : pedido.cliente;
+
   return (
     <Card
       className="mb-2 shadow-sm border-0 pedido-card"
@@ -46,7 +51,7 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
           <div className="flex-grow-1 me-3">
             <div className="d-flex align-items-center mb-1">
               <h6 className="mb-0 fw-bold text-dark me-2">
-                {pedido.cliente}
+                {nombreCliente}
               </h6>
               <Badge bg={isPago ? 'success' : 'danger'} className="small">
                 {pedido.estado}
@@ -55,6 +60,12 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
             <p className="mb-0 text-muted small text-truncate">
               {pedido.descripcion}
             </p>
+            {pedido.creadoPor && (
+              <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                <i className="bi bi-person-badge me-1"></i>
+                Cargado por: {pedido.creadoPor.nombre || pedido.creadoPor.usuario}
+              </small>
+            )}
           </div>
 
           {/* Columna derecha: Precio */}

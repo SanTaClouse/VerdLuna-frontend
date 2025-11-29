@@ -43,6 +43,11 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
     onHide();
   };
 
+  // Obtener nombre del cliente (puede venir como objeto o string)
+  const nombreCliente = typeof pedido.cliente === 'object'
+    ? pedido.cliente.nombre
+    : pedido.cliente;
+
   return (
     <Modal
       show={show}
@@ -54,7 +59,7 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
         <Modal.Title className="w-100">
           <div className="d-flex justify-content-between align-items-start">
             <div>
-              <h5 className="mb-1 fw-bold">{pedido.cliente}</h5>
+              <h5 className="mb-1 fw-bold">{nombreCliente}</h5>
               <small className="text-muted">
                 {formatDate(pedido.fecha)}
               </small>
@@ -126,9 +131,21 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
 
         {/* Información técnica */}
         <div className="border-top pt-3 mt-3">
-          <small className="text-muted">
-            <strong>ID del pedido:</strong> {pedido.id}
-          </small>
+          <Row>
+            <Col xs={12} className="mb-2">
+              <small className="text-muted">
+                <strong>ID del pedido:</strong> {pedido.id}
+              </small>
+            </Col>
+            {pedido.creadoPor && (
+              <Col xs={12}>
+                <small className="text-muted">
+                  <i className="bi bi-person-badge me-1"></i>
+                  <strong>Cargado por:</strong> {pedido.creadoPor.nombre || pedido.creadoPor.usuario}
+                </small>
+              </Col>
+            )}
+          </Row>
         </div>
 
         {/* Botón de acción */}

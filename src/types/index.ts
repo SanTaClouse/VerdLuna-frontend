@@ -28,13 +28,24 @@ export type EstadoPedido = 'Pago' | 'Impago';
 export interface Pedido {
   id: number | string;
   clienteId: string;
-  cliente: string;
+  cliente: {
+    id: string;
+    nombre: string;
+    direccion?: string;
+    telefono?: string;
+  };
   descripcion: string;
   precio: number;
   precioAbonado: number;
   estado: EstadoPedido;
   fecha: string;
-  timestamp: string;
+  timestamp?: string;
+  creadoPor?: {
+    id: string;
+    usuario: string;
+    nombre?: string;
+  };
+  creadoPorId?: string;
 }
 
 export interface FiltrosPedidos {
@@ -60,11 +71,9 @@ export interface ClienteUnico {
 
 export interface PedidoData {
   clienteId: string;
-  cliente: string;
   descripcion: string;
   precio: number;
   precioAbonado?: number;
-  estado?: EstadoPedido;
   fecha: string;
 }
 

@@ -150,7 +150,12 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
   // Filtrar pedidos (memoizado)
   const pedidosFiltrados = useCallback((): Pedido[] => {
     return pedidos.filter(pedido => {
-      if (filtros.cliente !== 'todos' && pedido.cliente !== filtros.cliente) {
+      // Obtener el nombre del cliente (puede ser objeto o string)
+      const nombreCliente = typeof pedido.cliente === 'object'
+        ? pedido.cliente.nombre
+        : pedido.cliente;
+
+      if (filtros.cliente !== 'todos' && nombreCliente !== filtros.cliente) {
         return false;
       }
       if (filtros.estado !== 'todos' && pedido.estado !== filtros.estado) {
