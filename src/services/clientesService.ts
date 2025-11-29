@@ -9,7 +9,7 @@ const clientesService = {
   async getAll(): Promise<ApiResponse<Cliente[]>> {
     try {
       const response = await apiClient.get(ENDPOINTS.CLIENTES.BASE);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar clientes';
       return { success: false, error: message, data: [] };
@@ -22,7 +22,7 @@ const clientesService = {
   async getById(id: string): Promise<ApiResponse<Cliente>> {
     try {
       const response = await apiClient.get(ENDPOINTS.CLIENTES.BY_ID(id));
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar cliente';
       return { success: false, error: message };
@@ -35,7 +35,7 @@ const clientesService = {
   async create(clienteData: ClienteData): Promise<ApiResponse<Cliente>> {
     try {
       const response = await apiClient.post(ENDPOINTS.CLIENTES.BASE, clienteData);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al crear cliente';
       return { success: false, error: message };
@@ -48,7 +48,7 @@ const clientesService = {
   async update(id: string, clienteData: Partial<Cliente>): Promise<ApiResponse<Cliente>> {
     try {
       const response = await apiClient.patch(ENDPOINTS.CLIENTES.BY_ID(id), clienteData);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al actualizar cliente';
       return { success: false, error: message };
@@ -74,7 +74,7 @@ const clientesService = {
   async getPedidos(clienteId: string): Promise<ApiResponse<Pedido[]>> {
     try {
       const response = await apiClient.get(ENDPOINTS.CLIENTES.PEDIDOS(clienteId));
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar pedidos del cliente';
       return { success: false, error: message, data: [] };

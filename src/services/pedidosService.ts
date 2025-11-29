@@ -28,7 +28,7 @@ const pedidosService = {
         : ENDPOINTS.PEDIDOS.BASE;
 
       const response = await apiClient.get(url);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar pedidos';
       return { success: false, error: message, data: [] };
@@ -41,7 +41,7 @@ const pedidosService = {
   async getById(id: string | number): Promise<ApiResponse<Pedido>> {
     try {
       const response = await apiClient.get(ENDPOINTS.PEDIDOS.BY_ID(id));
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar pedido';
       return { success: false, error: message };
@@ -54,7 +54,7 @@ const pedidosService = {
   async create(pedidoData: PedidoData): Promise<ApiResponse<Pedido>> {
     try {
       const response = await apiClient.post(ENDPOINTS.PEDIDOS.BASE, pedidoData);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al crear pedido';
       return { success: false, error: message };
@@ -67,7 +67,7 @@ const pedidosService = {
   async update(id: string | number, pedidoData: Partial<PedidoData>): Promise<ApiResponse<Pedido>> {
     try {
       const response = await apiClient.patch(ENDPOINTS.PEDIDOS.BY_ID(id), pedidoData);
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al actualizar pedido';
       return { success: false, error: message };
@@ -80,7 +80,7 @@ const pedidosService = {
   async marcarComoPago(id: string | number): Promise<ApiResponse<Pedido>> {
     try {
       const response = await apiClient.patch(ENDPOINTS.PEDIDOS.MARCAR_PAGO(id));
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al marcar como pago';
       return { success: false, error: message };
@@ -95,7 +95,7 @@ const pedidosService = {
       const response = await apiClient.patch(ENDPOINTS.PEDIDOS.BY_ID(id), {
         precioAbonado: nuevoAbono
       });
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al actualizar abono';
       return { success: false, error: message };
@@ -121,7 +121,7 @@ const pedidosService = {
   async getByCliente(clienteId: string): Promise<ApiResponse<Pedido[]>> {
     try {
       const response = await apiClient.get(ENDPOINTS.PEDIDOS.POR_CLIENTE(clienteId));
-      return { success: true, data: response.data };
+      return { success: true, data: response.data.data };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar pedidos del cliente';
       return { success: false, error: message, data: [] };

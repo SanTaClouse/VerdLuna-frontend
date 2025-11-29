@@ -75,7 +75,7 @@ const authService = {
   async verifyToken(): Promise<VerifyTokenResult> {
     try {
       const response = await apiClient.get(ENDPOINTS.AUTH.ME);
-      return { valid: true, user: response.data };
+      return { valid: true, user: response.data.user };
     } catch (error) {
       return { valid: false, user: undefined };
     }

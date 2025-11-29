@@ -48,6 +48,7 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
       show={show}
       onHide={onHide}
       centered
+      size="md"
     >
       <Modal.Header closeButton className="border-0 pb-0">
         <Modal.Title className="w-100">

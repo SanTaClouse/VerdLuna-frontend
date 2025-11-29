@@ -49,6 +49,7 @@ const ClienteModal = ({ show, onHide, cliente }: ClienteModalProps) => {
       show={show}
       onHide={onHide}
       centered
+      size="md"
     >
       <Modal.Header closeButton className="border-0 pb-0">
         <Modal.Title className="w-100">
@@ -84,6 +85,15 @@ const ClienteModal = ({ show, onHide, cliente }: ClienteModalProps) => {
               <strong className="ms-2">Email:</strong>
               <br />
               <span className="ms-4 small">{cliente.email}</span>
+            </p>
+          )}
+
+          {cliente.descripcion && (
+            <p className="mb-2">
+              <i className="bi bi-info-circle-fill text-secondary"></i>
+              <strong className="ms-2">Descripción:</strong>
+              <br />
+              <span className="ms-4 small text-muted">{cliente.descripcion}</span>
             </p>
           )}
         </div>

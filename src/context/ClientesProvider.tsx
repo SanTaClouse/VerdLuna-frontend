@@ -2,9 +2,6 @@ import { createContext, useState, useEffect, useCallback, useContext, ReactNode 
 import { clientesService } from '../services';
 import { Cliente, ClienteData, EstadisticasClientes, ApiResponse } from '../types';
 
-// Datos mock para desarrollo
-import clientesMock from '../helpers/clientesMock';
-
 interface ClientesContextType {
   clientes: Cliente[];
   loading: boolean;
@@ -20,9 +17,6 @@ interface ClientesContextType {
 
 const ClientesContext = createContext<ClientesContextType | undefined>(undefined);
 
-// Variable para cambiar entre mock y API real
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true' || true;
-
 interface ClientesProviderProps {
   children: ReactNode;
 }
@@ -37,22 +31,18 @@ export const ClientesProvider = ({ children }: ClientesProviderProps) => {
     cargarClientes();
   }, []);
 
-  // Cargar clientes
+  // Cargar clientes desde el backend
   const cargarClientes = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      if (USE_MOCK) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setClientes(clientesMock);
+      const result = await clientesService.getAll();
+
+      if (result.success && result.data) {
+        setClientes(result.data);
       } else {
-        const result = await clientesService.getAll();
-        if (result.success && result.data) {
-          setClientes(result.data);
-        } else {
-          setError(result.error || 'Error al cargar clientes');
-        }
+        setError(result.error || 'Error al cargar clientes');
       }
     } catch (err) {
       setError('Error al cargar clientes');
@@ -70,25 +60,11 @@ export const ClientesProvider = ({ children }: ClientesProviderProps) => {
   // Agregar cliente
   const agregarCliente = async (clienteData: ClienteData): Promise<ApiResponse<Cliente>> => {
     try {
-      if (USE_MOCK) {
-        const nuevoCliente: Cliente = {
-          id: `c${Date.now()}`,
-          ...clienteData,
-          totalFacturado: 0,
-          cantidadPedidos: 0,
-          ultimoPedido: null,
-          fechaRegistro: new Date().toISOString().split('T')[0],
-          estado: 'activo'
-        };
-        setClientes(prev => [nuevoCliente, ...prev]);
-        return { success: true, data: nuevoCliente };
-      } else {
-        const result = await clientesService.create(clienteData);
-        if (result.success && result.data) {
-          setClientes(prev => [result.data!, ...prev]);
-        }
-        return result;
+      const result = await clientesService.create(clienteData);
+      if (result.success && result.data) {
+        setClientes(prev => [result.data!, ...prev]);
       }
+      return result;
     } catch (err) {
       console.error('Error al agregar cliente:', err);
       return { success: false, error: (err as Error).message };
@@ -98,20 +74,13 @@ export const ClientesProvider = ({ children }: ClientesProviderProps) => {
   // Actualizar cliente
   const actualizarCliente = async (id: string, datosActualizados: Partial<Cliente>): Promise<ApiResponse> => {
     try {
-      if (USE_MOCK) {
+      const result = await clientesService.update(id, datosActualizados);
+      if (result.success && result.data) {
         setClientes(prev =>
-          prev.map(c => c.id === id ? { ...c, ...datosActualizados } : c)
+          prev.map(c => c.id === id ? result.data! : c)
         );
-        return { success: true };
-      } else {
-        const result = await clientesService.update(id, datosActualizados);
-        if (result.success && result.data) {
-          setClientes(prev =>
-            prev.map(c => c.id === id ? result.data! : c)
-          );
-        }
-        return result;
       }
+      return result;
     } catch (err) {
       console.error('Error al actualizar cliente:', err);
       return { success: false, error: (err as Error).message };
@@ -121,16 +90,11 @@ export const ClientesProvider = ({ children }: ClientesProviderProps) => {
   // Eliminar cliente
   const eliminarCliente = async (id: string): Promise<ApiResponse> => {
     try {
-      if (USE_MOCK) {
+      const result = await clientesService.delete(id);
+      if (result.success) {
         setClientes(prev => prev.filter(c => c.id !== id));
-        return { success: true };
-      } else {
-        const result = await clientesService.delete(id);
-        if (result.success) {
-          setClientes(prev => prev.filter(c => c.id !== id));
-        }
-        return result;
       }
+      return result;
     } catch (err) {
       console.error('Error al eliminar cliente:', err);
       return { success: false, error: (err as Error).message };

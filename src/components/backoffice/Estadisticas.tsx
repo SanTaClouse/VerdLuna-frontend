@@ -18,48 +18,56 @@ const Estadisticas = () => {
 
   const { estadisticas } = context;
 
+  // Asegurar que los valores sean números
+  const totalVentas = Number(estadisticas.totalVentas) || 0;
+  const totalCobrado = Number(estadisticas.totalCobrado) || 0;
+  const totalPendiente = Number(estadisticas.totalPendiente) || 0;
+  const cantidadPagos = Number(estadisticas.cantidadPagos) || 0;
+  const cantidadImpagos = Number(estadisticas.cantidadImpagos) || 0;
+  const cantidadTotal = Number(estadisticas.cantidadTotal) || 0;
+
   const stats: StatItem[] = [
     {
       titulo: 'Total Ventas',
-      valor: `$${estadisticas.totalVentas.toFixed(2)}`,
+      valor: `$${totalVentas.toFixed(2)}`,
       color: 'primary',
       icon: '💰'
     },
     {
       titulo: 'Total Cobrado',
-      valor: `$${estadisticas.totalCobrado.toFixed(2)}`,
+      valor: `$${totalCobrado.toFixed(2)}`,
       color: 'success',
       icon: '✅'
     },
     {
       titulo: 'Pendiente de Cobro',
-      valor: `$${estadisticas.totalPendiente.toFixed(2)}`,
+      valor: `$${totalPendiente.toFixed(2)}`,
       color: 'danger',
       icon: '⏳'
     },
     {
       titulo: 'Pedidos Pagos',
-      valor: estadisticas.cantidadPagos,
+      valor: cantidadPagos,
       color: 'success',
       icon: '✔️'
     },
     {
       titulo: 'Pedidos Impagos',
-      valor: estadisticas.cantidadImpagos,
+      valor: cantidadImpagos,
       color: 'warning',
       icon: '⚠️'
     },
     {
       titulo: 'Total Pedidos',
-      valor: estadisticas.cantidadTotal,
+      valor: cantidadTotal,
       color: 'info',
       icon: '📦'
     }
   ];
 
   // Calcular porcentaje de cobro
-  const porcentajeCobro = estadisticas.totalVentas > 0
-    ? ((estadisticas.totalCobrado / estadisticas.totalVentas) * 100).toFixed(1)
+  const porcentajeCobro = totalVentas > 0
+    ? ((totalCobrado / totalVentas) * 100).toFixed(1)
     : '0';
 
   return (

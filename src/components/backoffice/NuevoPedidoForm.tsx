@@ -1,5 +1,5 @@
 import { useState, useContext, ChangeEvent, FormEvent } from "react";
-import { Form, Button, Container, Row, Col, Card, Alert } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Card, Alert, Badge } from "react-bootstrap";
 import PedidosContext from "../../context/PedidosProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +16,10 @@ interface FormData {
 interface Mensaje {
   tipo: string;
   texto: string;
+}
+
+interface Errores {
+  [key: string]: string | null;
 }
 
 const NuevoPedidoForm = () => {
@@ -40,10 +44,19 @@ const NuevoPedidoForm = () => {
 
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState<Mensaje>({ tipo: '', texto: '' });
+  const [errores, setErrores] = useState<Errores>({});
+
+  // Fecha máxima permitida (hoy)
+  const fechaMaxima = new Date().toISOString().split("T")[0];
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, value, type, checked } = target;
+
+    // Limpiar error específico cuando el usuario corrige
+    if (errores[name]) {
+      setErrores(prev => ({ ...prev, [name]: null }));
+    }
 
     if (name === "cliente") {
       const clienteSeleccionado = clientesUnicos.find(c => c.id === value);
@@ -64,25 +77,69 @@ const NuevoPedidoForm = () => {
     }));
   };
 
+  // Validaciones personalizadas
+  const validarFormulario = (): boolean => {
+    const nuevosErrores: Errores = {};
+
+    // Validar precio
+    const precio = parseFloat(form.precio);
+    if (isNaN(precio) || precio <= 0) {
+      nuevosErrores.precio = "El precio debe ser mayor a 0";
+    } else if (precio < 10000) {
+      nuevosErrores.precio = "El precio parece muy bajo. ¿Quisiste ingresar $" + (precio * 1000).toLocaleString('es-AR') + "?";
+    } else if (precio > 500000) {
+      nuevosErrores.precio = "El precio supera el máximo esperado ($500.000)";
+    }
+
+    // Validar precio abonado
+    const precioAbonado = parseFloat(form.precioAbonado) || 0;
+    if (precioAbonado > precio) {
+      nuevosErrores.precioAbonado = "El precio abonado no puede ser mayor al precio total";
+    }
+
+    // Validar fecha futura
+    const fechaPedido = new Date(form.fecha);
+    const hoy = new Date(fechaMaxima);
+    if (fechaPedido > hoy) {
+      nuevosErrores.fecha = "No se pueden cargar pedidos con fecha futura";
+    }
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
+  };
+
   const precioRestante = Math.max(
     (parseFloat(form.precio) || 0) - (parseFloat(form.precioAbonado) || 0),
     0
   );
 
+  // Formatear precio para preview
+  const precioFormateado = form.precio
+    ? parseFloat(form.precio).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+    : '$0,00';
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validar antes de enviar
+    if (!validarFormulario()) {
+      setMensaje({
+        tipo: 'warning',
+        texto: '⚠️ Por favor corrige los errores antes de continuar'
+      });
+      return;
+    }
+
     setEnviando(true);
     setMensaje({ tipo: '', texto: '' });
 
     const pedidoData = {
       clienteId: form.clienteId,
-      cliente: form.cliente,
       descripcion: form.descripcion,
       precio: parseFloat(form.precio),
       precioAbonado: form.pagoCompleto
         ? parseFloat(form.precio)
         : parseFloat(form.precioAbonado) || 0,
-      estado: (form.pagoCompleto ? "Pago" : "Impago") as "Pago" | "Impago",
       fecha: form.fecha,
     };
 
@@ -104,6 +161,7 @@ const NuevoPedidoForm = () => {
           pagoCompleto: false,
           fecha: new Date().toISOString().split("T")[0],
         });
+        setErrores({});
 
         setTimeout(() => {
           navigate('/ventas');
@@ -150,6 +208,7 @@ const NuevoPedidoForm = () => {
                 onChange={handleChange}
                 required
                 disabled={enviando}
+                isInvalid={!!errores.cliente}
               >
                 <option value="">Seleccionar cliente</option>
                 {clientesUnicos.map((c) => (
@@ -180,7 +239,7 @@ const NuevoPedidoForm = () => {
 
             <Row>
               {/* PRECIO TOTAL */}
-              <Col xs={12} md={4}>
+              <Col xs={12} md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Precio total ($) *</Form.Label>
                   <Form.Control
@@ -192,13 +251,29 @@ const NuevoPedidoForm = () => {
                     required
                     min="0"
                     disabled={enviando}
-                    placeholder="0.00"
+                    placeholder="Ejemplo: 50000"
+                    isInvalid={!!errores.precio}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {errores.precio}
+                  </Form.Control.Feedback>
+                  <Form.Text className="text-muted d-block">
+                    💡 <strong>Importante:</strong> Ingresar solo números, sin puntos ni comas
+                    <br />
+                    <small>Rango esperado: $10.000 - $500.000</small>
+                  </Form.Text>
+                  {form.precio && !errores.precio && (
+                    <div className="mt-2">
+                      <Badge bg="info">
+                        Vista previa: {precioFormateado}
+                      </Badge>
+                    </div>
+                  )}
                 </Form.Group>
               </Col>
 
               {/* PRECIO ABONADO */}
-              <Col xs={12} md={4}>
+              <Col xs={12} md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Precio abonado ($)</Form.Label>
                   <Form.Control
@@ -209,31 +284,33 @@ const NuevoPedidoForm = () => {
                     onChange={handleChange}
                     disabled={form.pagoCompleto || enviando}
                     min="0"
-                    placeholder="0.00"
+                    placeholder="0"
+                    isInvalid={!!errores.precioAbonado}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errores.precioAbonado}
+                  </Form.Control.Feedback>
+                  <Form.Check
+                    type="checkbox"
+                    name="pagoCompleto"
+                    label="Pago completo"
+                    checked={form.pagoCompleto}
+                    onChange={handleChange}
+                    disabled={enviando}
+                    className="mt-2"
                   />
                 </Form.Group>
-              </Col>
-
-              {/* CHECKBOX */}
-              <Col xs={12} md={4} className="d-flex align-items-center">
-                <Form.Check
-                  type="checkbox"
-                  name="pagoCompleto"
-                  label="Pago completo"
-                  checked={form.pagoCompleto}
-                  onChange={handleChange}
-                  disabled={enviando}
-                  className="mt-3 mt-md-0"
-                />
               </Col>
             </Row>
 
             {/* PRECIO RESTANTE */}
-            <div className="text-end mb-3">
-              <strong className={precioRestante > 0 ? "text-danger" : "text-success"}>
-                Restante: ${precioRestante.toFixed(2)}
-              </strong>
-            </div>
+            {form.precio && (
+              <div className="text-end mb-3">
+                <strong className={precioRestante > 0 ? "text-danger" : "text-success"}>
+                  Restante: ${precioRestante.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </strong>
+              </div>
+            )}
 
             {/* FECHA */}
             <Form.Group className="mb-3">
@@ -245,7 +322,15 @@ const NuevoPedidoForm = () => {
                 onChange={handleChange}
                 required
                 disabled={enviando}
+                max={fechaMaxima}
+                isInvalid={!!errores.fecha}
               />
+              <Form.Control.Feedback type="invalid">
+                {errores.fecha}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                No se permiten fechas futuras
+              </Form.Text>
             </Form.Group>
 
             {/* BOTONES */}

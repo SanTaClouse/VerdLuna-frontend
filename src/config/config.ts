@@ -29,7 +29,7 @@ export const ENDPOINTS = {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
-    ME: '/auth/me',
+    ME: '/auth/verify',
   },
 
   // Clientes
