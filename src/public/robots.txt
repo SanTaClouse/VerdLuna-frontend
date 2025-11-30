@@ -1,0 +1,20 @@
+
+ 
+Robots · TXT
+Copiar
+
+# Verdulería La Luna - robots.txt
+User-agent: *
+Allow: /
+Allow: /sucursales
+Allow: /mayorista
+Allow: /contacto
+
+# Bloquear páginas privadas del backoffice
+Disallow: /ventas
+Disallow: /nuevopedido
+Disallow: /clientes
+Disallow: /login
+
+# Sitemap
+Sitemap: https://laluna123.vercel.app/sitemap.xml
