@@ -21,7 +21,28 @@ const authService = {
 
       return { success: true, user, token };
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Error al iniciar sesión';
+      console.error('Error en login:', error);
+
+      // Intentar extraer el mensaje de error del backend
+      let message = 'Error al iniciar sesión';
+
+      if (error.response) {
+        // El servidor respondió con un código de error
+        if (error.response.status === 401) {
+          message = 'Usuario o contraseña incorrectos';
+        } else if (error.response.data?.message) {
+          message = error.response.data.message;
+        } else if (typeof error.response.data === 'string') {
+          message = error.response.data;
+        }
+      } else if (error.request) {
+        // La solicitud se envió pero no hubo respuesta
+        message = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+      } else {
+        // Error al configurar la solicitud
+        message = error.message || 'Error inesperado al iniciar sesión';
+      }
+
       return { success: false, error: message };
     }
   },

@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
-import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
+import { showError } from '../../utils/sweetAlert';
 
 interface LoginFormData {
   usuario: string;
@@ -18,7 +19,6 @@ const LoginPage = () => {
     usuario: '',
     password: ''
   });
-  const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
 
   // Determinar a dónde redirigir después del login
@@ -29,13 +29,11 @@ const LoginPage = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
-    setError('');
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setCargando(true);
-    setError('');
 
     try {
       const result = await login(formData.usuario, formData.password);
@@ -44,10 +42,18 @@ const LoginPage = () => {
         // Redirigir al destino original o al backoffice
         navigate(from, { replace: true });
       } else {
-        setError(result.error || 'Usuario o contraseña incorrectos');
+        // Mostrar error con SweetAlert2
+        await showError(
+          result.error || 'Usuario o contraseña incorrectos',
+          'Error de autenticación'
+        );
       }
     } catch (err) {
-      setError('Error al iniciar sesión. Intenta nuevamente.');
+      // Error inesperado
+      await showError(
+        'Error al iniciar sesión. Intenta nuevamente.',
+        'Error'
+      );
     } finally {
       setCargando(false);
     }
@@ -75,13 +81,6 @@ const LoginPage = () => {
                     <h2 className="fw-bold mb-2">🌙 La Luna</h2>
                     <p className="text-muted">Acceso al Sistema Administrativo</p>
                   </div>
-
-                  {error && (
-                    <Alert variant="danger" dismissible onClose={() => setError('')}>
-                      <i className="bi bi-exclamation-circle me-2"></i>
-                      {error}
-                    </Alert>
-                  )}
 
                   <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
@@ -138,16 +137,6 @@ const LoginPage = () => {
                         )}
                       </Button>
                     </div>
-
-                    {/* Credenciales de prueba - ELIMINAR EN PRODUCCIÓN */}
-                    {import.meta.env.DEV && (
-                      <div className="text-center">
-                        <small className="text-muted">
-                          <strong>Credenciales de prueba:</strong><br />
-                          Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
-                        </small>
-                      </div>
-                    )}
                   </Form>
 
                   <hr className="my-4" />
