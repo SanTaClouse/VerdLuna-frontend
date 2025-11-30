@@ -50,7 +50,7 @@ const ClienteModal = ({ show, onHide, cliente }: ClienteModalProps) => {
       show={show}
       onHide={onHide}
       centered
-      size="md"
+      size="sm"
     >
       <Modal.Header closeButton className="border-0 pb-0">
         <Modal.Title className="w-100">

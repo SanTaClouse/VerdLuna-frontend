@@ -90,12 +90,7 @@ const ClienteDetallePage = () => {
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    return dateString.split('T')[0]
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -158,8 +153,8 @@ const ClienteDetallePage = () => {
 
   // Calcular estadísticas
   const totalPedidos = pedidosCliente.length;
-  const totalFacturado = pedidosCliente.reduce((sum, p) => sum + p.precio, 0);
-  const totalCobrado = pedidosCliente.reduce((sum, p) => sum + p.precioAbonado, 0);
+  const totalFacturado = pedidosCliente.reduce((sum, p) => sum + Number(p.precio || 0), 0);
+  const totalCobrado = pedidosCliente.reduce((sum, p) => sum + Number(p.precioAbonado || 0), 0);
   const totalPendiente = totalFacturado - totalCobrado;
   const promedioCompra = totalPedidos > 0 ? totalFacturado / totalPedidos : 0;
 
