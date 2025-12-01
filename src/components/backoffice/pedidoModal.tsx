@@ -129,6 +129,14 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
           </Row>
         </div>
 
+        {/* Estado de WhatsApp */}
+        {pedido.whatsappEnviado && (
+          <Alert variant="info" className="mb-3">
+            <i className="bi bi-whatsapp me-2"></i>
+            <strong>Notificación enviada:</strong> El cliente fue notificado por WhatsApp sobre este pedido
+          </Alert>
+        )}
+
         {/* Información técnica */}
         <div className="border-top pt-3 mt-3">
           <Row>
