@@ -16,7 +16,8 @@ const PedidoCards = () => {
     pedidosFiltrados,
     loading,
     error,
-    actualizarEstadoPago
+    actualizarEstadoPago,
+    cargarPedidos
   } = context;
 
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
@@ -60,6 +61,11 @@ const PedidoCards = () => {
         alert('❌ Error al actualizar el pedido');
       }
     }
+  };
+
+  const handleWhatsappEnviado = async () => {
+    // Recargar pedidos para actualizar el estado
+    await cargarPedidos();
   };
 
   // Estados de carga
@@ -133,6 +139,7 @@ const PedidoCards = () => {
         onHide={handleCloseModal}
         pedido={pedidoSeleccionado}
         onMarcarPago={handleMarcarPago}
+        onWhatsappEnviado={handleWhatsappEnviado}
       />
     </>
   );

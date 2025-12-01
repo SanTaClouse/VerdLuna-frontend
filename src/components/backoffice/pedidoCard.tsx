@@ -1,17 +1,13 @@
-import { Card, Badge, Button } from 'react-bootstrap';
+import { Card, Badge } from 'react-bootstrap';
 import { Pedido } from '../../types';
-import { MouseEvent, useState } from 'react';
-import pedidosService from '../../services/pedidosService';
+import { MouseEvent } from 'react';
 
 interface PedidoCardProps {
   pedido: Pedido;
   onClick: (pedido: Pedido) => void;
-  onWhatsappEnviado?: (pedidoId: string | number) => void;
 }
 
-const PedidoCard = ({ pedido, onClick, onWhatsappEnviado }: PedidoCardProps) => {
-  const [enviandoWhatsapp, setEnviandoWhatsapp] = useState(false);
-  const [whatsappEnviado, setWhatsappEnviado] = useState(pedido.whatsappEnviado || false);
+const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
 
   const restante = pedido.precio - pedido.precioAbonado;
   const isPago = pedido.estado === 'Pago';
@@ -29,34 +25,6 @@ const PedidoCard = ({ pedido, onClick, onWhatsappEnviado }: PedidoCardProps) => 
   const nombreCliente = typeof pedido.cliente === 'object'
     ? pedido.cliente.nombre
     : pedido.cliente;
-
-  const handleEnviarWhatsApp = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Prevenir que se abra el modal
-
-    setEnviandoWhatsapp(true);
-
-    try {
-      // 1. Obtener el link de WhatsApp
-      const linkResponse = await pedidosService.getWhatsappLink(pedido.id);
-
-      if (linkResponse.success && linkResponse.data) {
-        // 2. Abrir WhatsApp en nueva pestaña
-        window.open(linkResponse.data.whatsappLink, '_blank');
-
-        // 3. Marcar como enviado
-        const marcarResponse = await pedidosService.marcarWhatsappEnviado(pedido.id);
-
-        if (marcarResponse.success) {
-          setWhatsappEnviado(true);
-          onWhatsappEnviado?.(pedido.id);
-        }
-      }
-    } catch (error) {
-      console.error('Error al enviar WhatsApp:', error);
-    } finally {
-      setEnviandoWhatsapp(false);
-    }
-  };
 
   return (
     <Card
@@ -89,8 +57,22 @@ const PedidoCard = ({ pedido, onClick, onWhatsappEnviado }: PedidoCardProps) => 
               <Badge bg={isPago ? 'success' : 'danger'} className="small">
                 {pedido.estado}
               </Badge>
+              {pedido.whatsappEnviado && (
+                <Badge bg="info" className="small ms-1">
+                  <i className="bi bi-whatsapp me-1"></i>
+                  Notificado
+                </Badge>
+              )}
             </div>
-            <p className="mb-0 text-muted small text-truncate">
+            <p className="mb-0 text-muted small" style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              lineHeight: '1.4em',
+              maxHeight: '2.8em'
+            }}>
               {pedido.descripcion}
             </p>
             {pedido.creadoPor && (
@@ -111,37 +93,6 @@ const PedidoCard = ({ pedido, onClick, onWhatsappEnviado }: PedidoCardProps) => 
                 Resta: {formatMoney(restante)}
               </small>
             )}
-
-            {/* Botón de WhatsApp */}
-            <div className="mt-2">
-              {!whatsappEnviado ? (
-                <Button
-                  size="sm"
-                  variant="success"
-                  onClick={handleEnviarWhatsApp}
-                  disabled={enviandoWhatsapp}
-                  className="d-flex align-items-center gap-1"
-                  style={{
-                    backgroundColor: '#25D366',
-                    borderColor: '#25D366',
-                    fontSize: '0.75rem',
-                    padding: '0.25rem 0.5rem'
-                  }}
-                >
-                  <i className="bi bi-whatsapp"></i>
-                  {enviandoWhatsapp ? 'Enviando...' : 'Enviar por WhatsApp'}
-                </Button>
-              ) : (
-                <Badge
-                  bg="info"
-                  className="d-flex align-items-center gap-1"
-                  style={{ fontSize: '0.7rem' }}
-                >
-                  <i className="bi bi-check-circle-fill"></i>
-                  Enviado
-                </Badge>
-              )}
-            </div>
           </div>
         </div>
       </Card.Body>

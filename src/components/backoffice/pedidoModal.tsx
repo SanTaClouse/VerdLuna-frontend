@@ -1,18 +1,27 @@
 import { Modal, Button, Row, Col, Badge, Alert } from 'react-bootstrap';
 import { useState } from 'react';
 import { Pedido } from '../../types';
+import pedidosService from '../../services/pedidosService';
 
 interface PedidoModalProps {
   show: boolean;
   onHide: () => void;
   pedido: Pedido | null;
   onMarcarPago: (id: number | string) => Promise<void>;
+  onWhatsappEnviado?: (pedidoId: string | number) => void;
 }
 
-const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) => {
+const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado }: PedidoModalProps) => {
   const [marcando, setMarcando] = useState(false);
+  const [enviandoWhatsapp, setEnviandoWhatsapp] = useState(false);
+  const [whatsappEnviado, setWhatsappEnviado] = useState(pedido?.whatsappEnviado || false);
 
   if (!pedido) return null;
+
+  // Actualizar el estado cuando cambie el pedido
+  if (pedido && whatsappEnviado !== pedido.whatsappEnviado) {
+    setWhatsappEnviado(pedido.whatsappEnviado || false);
+  }
 
   const restante = pedido.precio - pedido.precioAbonado;
   const isPago = pedido.estado === 'Pago';
@@ -41,6 +50,32 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
     await onMarcarPago(pedido.id);
     setMarcando(false);
     onHide();
+  };
+
+  const handleEnviarWhatsApp = async () => {
+    setEnviandoWhatsapp(true);
+
+    try {
+      // 1. Obtener el link de WhatsApp
+      const linkResponse = await pedidosService.getWhatsappLink(pedido.id);
+
+      if (linkResponse.success && linkResponse.data) {
+        // 2. Abrir WhatsApp en nueva pestaña
+        window.open(linkResponse.data.whatsappLink, '_blank');
+
+        // 3. Marcar como enviado
+        const marcarResponse = await pedidosService.marcarWhatsappEnviado(pedido.id);
+
+        if (marcarResponse.success) {
+          setWhatsappEnviado(true);
+          onWhatsappEnviado?.(pedido.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error al enviar WhatsApp:', error);
+    } finally {
+      setEnviandoWhatsapp(false);
+    }
   };
 
   // Obtener nombre del cliente (puede venir como objeto o string)
@@ -129,13 +164,43 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
           </Row>
         </div>
 
-        {/* Estado de WhatsApp */}
-        {pedido.whatsappEnviado && (
-          <Alert variant="info" className="mb-3">
+        {/* WhatsApp */}
+        <div className="mb-3">
+          <h6 className="text-muted mb-2">
             <i className="bi bi-whatsapp me-2"></i>
-            <strong>Notificación enviada:</strong> El cliente fue notificado por WhatsApp sobre este pedido
-          </Alert>
-        )}
+            Notificación por WhatsApp
+          </h6>
+          {whatsappEnviado ? (
+            <Alert variant="info" className="mb-0">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              <strong>Notificación enviada:</strong> El cliente fue notificado por WhatsApp sobre este pedido
+            </Alert>
+          ) : (
+            <div className="d-grid">
+              <Button
+                variant="success"
+                onClick={handleEnviarWhatsApp}
+                disabled={enviandoWhatsapp}
+                style={{
+                  backgroundColor: '#25D366',
+                  borderColor: '#25D366'
+                }}
+              >
+                {enviandoWhatsapp ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-whatsapp me-2"></i>
+                    Enviar pedido por WhatsApp
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
 
         {/* Información técnica */}
         <div className="border-top pt-3 mt-3">
