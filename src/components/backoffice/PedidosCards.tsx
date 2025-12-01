@@ -68,6 +68,11 @@ const PedidoCards = () => {
     await cargarPedidos();
   };
 
+  const handlePagoActualizado = async () => {
+    // Recargar pedidos para actualizar el estado
+    await cargarPedidos();
+  };
+
   // Estados de carga
   if (loading) {
     return (
@@ -140,6 +145,7 @@ const PedidoCards = () => {
         pedido={pedidoSeleccionado}
         onMarcarPago={handleMarcarPago}
         onWhatsappEnviado={handleWhatsappEnviado}
+        onPagoActualizado={handlePagoActualizado}
       />
     </>
   );

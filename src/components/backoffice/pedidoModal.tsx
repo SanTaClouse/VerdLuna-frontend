@@ -2,6 +2,7 @@ import { Modal, Button, Row, Col, Badge, Alert } from 'react-bootstrap';
 import { useState } from 'react';
 import { Pedido } from '../../types';
 import pedidosService from '../../services/pedidosService';
+import PagoModal from './PagoModal';
 
 interface PedidoModalProps {
   show: boolean;
@@ -9,12 +10,14 @@ interface PedidoModalProps {
   pedido: Pedido | null;
   onMarcarPago: (id: number | string) => Promise<void>;
   onWhatsappEnviado?: (pedidoId: string | number) => void;
+  onPagoActualizado?: () => void;
 }
 
-const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado }: PedidoModalProps) => {
+const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado, onPagoActualizado }: PedidoModalProps) => {
   const [marcando, setMarcando] = useState(false);
   const [enviandoWhatsapp, setEnviandoWhatsapp] = useState(false);
   const [whatsappEnviado, setWhatsappEnviado] = useState(pedido?.whatsappEnviado || false);
+  const [showPagoModal, setShowPagoModal] = useState(false);
 
   if (!pedido) return null;
 
@@ -76,6 +79,12 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado }: 
     } finally {
       setEnviandoWhatsapp(false);
     }
+  };
+
+  const handleConfirmarPago = async (monto: number) => {
+    await pedidosService.actualizarPrecioAbonado(pedido.id, monto);
+    onPagoActualizado?.();
+    onHide();
   };
 
   // Obtener nombre del cliente (puede venir como objeto o string)
@@ -144,12 +153,24 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado }: 
               </div>
             </Col>
             <Col xs={6}>
-              <div className="bg-light p-2 rounded text-center">
-                <small className="text-muted d-block">Abonado</small>
-                <strong className="text-success">
+              <Button
+                variant={tieneDeuda ? 'outline-success' : 'success'}
+                className="w-100 h-100 d-flex flex-column align-items-center justify-content-center p-2"
+                onClick={() => setShowPagoModal(true)}
+                disabled={!tieneDeuda}
+                style={{ minHeight: '70px' }}
+              >
+                <small className="text-muted d-block mb-1">Abonado</small>
+                <strong className={tieneDeuda ? 'text-success' : 'text-white'}>
                   {formatMoney(pedido.precioAbonado)}
                 </strong>
-              </div>
+                {tieneDeuda && (
+                  <small className="mt-1">
+                    <i className="bi bi-plus-circle me-1"></i>
+                    Registrar pago
+                  </small>
+                )}
+              </Button>
             </Col>
             {tieneDeuda && (
               <Col xs={12}>
@@ -253,6 +274,16 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado }: 
         )}
 
       </Modal.Body>
+
+      {/* Modal de pago parcial */}
+      <PagoModal
+        show={showPagoModal}
+        onHide={() => setShowPagoModal(false)}
+        onConfirmar={handleConfirmarPago}
+        pedidoId={pedido.id}
+        precioTotal={pedido.precio}
+        precioAbonado={pedido.precioAbonado}
+      />
     </Modal>
   );
 };

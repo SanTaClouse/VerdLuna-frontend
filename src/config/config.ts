@@ -45,6 +45,7 @@ export const ENDPOINTS = {
     BY_ID: (id: string | number) => `/pedidos/${id}`,
     MARCAR_PAGO: (id: string | number) => `/pedidos/${id}/marcar-pago`,
     ACTUALIZAR_ESTADO: (id: string | number) => `/pedidos/${id}/estado`,
+    ACTUALIZAR_PRECIO_ABONADO: (id: string | number) => `/pedidos/${id}/precio-abonado`,
     POR_CLIENTE: (clienteId: string) => `/pedidos/cliente/${clienteId}`,
     WHATSAPP_LINK: (id: string | number) => `/pedidos/${id}/whatsapp-link`,
     WHATSAPP_ENVIADO: (id: string | number) => `/pedidos/${id}/whatsapp-enviado`,

@@ -88,7 +88,22 @@ const pedidosService = {
   },
 
   /**
-   * Actualizar abono parcial
+   * Actualizar abono parcial (añade el monto al precio abonado existente)
+   */
+  async actualizarPrecioAbonado(id: string | number, monto: number): Promise<ApiResponse<Pedido>> {
+    try {
+      const response = await apiClient.patch(ENDPOINTS.PEDIDOS.ACTUALIZAR_PRECIO_ABONADO(id), {
+        monto
+      });
+      return { success: true, data: response.data.data };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al actualizar precio abonado';
+      return { success: false, error: message };
+    }
+  },
+
+  /**
+   * Actualizar abono parcial (reemplaza el precio abonado completo)
    */
   async actualizarAbono(id: string | number, nuevoAbono: number): Promise<ApiResponse<Pedido>> {
     try {
