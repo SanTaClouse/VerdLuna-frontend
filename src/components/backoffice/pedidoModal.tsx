@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pedido } from '../../types';
 import pedidosService from '../../services/pedidosService';
 import PagoModal from './PagoModal';
+import { useWhatsappLink } from '../../hooks/useWhatsappLink';
 
 interface PedidoModalProps {
   show: boolean;
@@ -15,9 +16,11 @@ interface PedidoModalProps {
 
 const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado, onPagoActualizado }: PedidoModalProps) => {
   const [marcando, setMarcando] = useState(false);
-  const [enviandoWhatsapp, setEnviandoWhatsapp] = useState(false);
   const [whatsappEnviado, setWhatsappEnviado] = useState(pedido?.whatsappEnviado || false);
   const [showPagoModal, setShowPagoModal] = useState(false);
+
+  // Hook para enviar WhatsApp (compatible con iPhone/Safari)
+  const { sendWhatsapp, loading: enviandoWhatsapp } = useWhatsappLink();
 
   if (!pedido) return null;
 
@@ -56,29 +59,12 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado, on
   };
 
   const handleEnviarWhatsApp = async () => {
-    setEnviandoWhatsapp(true);
+    // Usar el hook personalizado que es compatible con iPhone/Safari
+    await sendWhatsapp(pedido.id);
 
-    try {
-      // 1. Obtener el link de WhatsApp
-      const linkResponse = await pedidosService.getWhatsappLink(pedido.id);
-
-      if (linkResponse.success && linkResponse.data) {
-        // 2. Abrir WhatsApp en nueva pestaña
-        window.open(linkResponse.data.whatsappLink, '_blank');
-
-        // 3. Marcar como enviado
-        const marcarResponse = await pedidosService.marcarWhatsappEnviado(pedido.id);
-
-        if (marcarResponse.success) {
-          setWhatsappEnviado(true);
-          onWhatsappEnviado?.(pedido.id);
-        }
-      }
-    } catch (error) {
-      console.error('Error al enviar WhatsApp:', error);
-    } finally {
-      setEnviandoWhatsapp(false);
-    }
+    // Actualizar el estado local y notificar al padre
+    setWhatsappEnviado(true);
+    onWhatsappEnviado?.(pedido.id);
   };
 
   const handleConfirmarPago = async (monto: number) => {
