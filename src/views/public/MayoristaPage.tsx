@@ -107,7 +107,7 @@ const MayoristaPage = () => {
           content="mayorista frutas, mayorista verduras, Santa Fe, Maciel, proveedor verdulería, venta por mayor, frutas frescas mayorista"
         />
         <meta property="og:title" content="Venta Mayorista - Verdulería La Luna" />
-        <link rel="canonical" href="https://verdulerialuna.com/mayorista" />
+        <link rel="canonical" href="https://laluna123.vercel.app/mayorista" />
       </Helmet>
 
       {/* Hero */}
@@ -126,7 +126,7 @@ const MayoristaPage = () => {
             Proveemos a más de 10 comercios en la zona
           </p>
           <p className="fs-5">
-            Verdulerías • Almacenes • Rotiserías • Comedores • Restaurantes
+            Verdulerías • Almacenes • Supermercados • Comedores • Restaurantes
           </p>
         </Container>
       </section>
@@ -319,13 +319,13 @@ const MayoristaPage = () => {
           <p className="lead mb-4">Llamanos o escribinos por WhatsApp</p>
           <div className="d-flex justify-content-center gap-3 flex-wrap">
             <a
-              href="tel:+543425123456"
+              href="tel:+543476603699"
               className="btn btn-light btn-lg"
             >
               📞 (03460) 123456
             </a>
             <a
-              href="https://wa.me/543425123456"
+              href="https://wa.me/543476603699"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-light btn-lg"

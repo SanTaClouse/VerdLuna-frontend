@@ -19,7 +19,7 @@ const MayoristaSection = () => {
               </h2>
               <p className="lead mb-4">
                 Proveemos a más de <strong>10 clientes mayoristas</strong> en la zona:
-                verdulerías, almacenes, rotiserías y comedores.
+                verdulerías, almacenes, supermercados y comedores.
               </p>
               <ul className="list-unstyled mb-4 fs-5">
                 <li className="mb-2">✅ Productos frescos de calidad</li>

@@ -16,15 +16,7 @@ const Footer = () => {
             </p>
             <div className="d-flex gap-3 mt-3">
               <a
-                href="https://facebook.com/verdulerialuna"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white fs-4"
-              >
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a
-                href="https://instagram.com/verdulerialuna"
+                href="https://www.instagram.com/verdulerialaluna1.2y3"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white fs-4"
@@ -32,7 +24,7 @@ const Footer = () => {
                 <i className="bi bi-instagram"></i>
               </a>
               <a
-                href="https://wa.me/543425123456"
+                href="https://wa.me/543476603699"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white fs-4"
@@ -96,7 +88,7 @@ const Footer = () => {
                 <i className="bi bi-telephone-fill"></i> 3476603699
               </li>
               <li className="mb-2">
-                <i className="bi bi-envelope-fill"></i> Pablocarrizo120@gmail.com
+                <i className="bi bi-envelope-fill"></i> pablocarrizo120@gmail.com
               </li>
               <li className="mb-2">
                 <i className="bi bi-whatsapp"></i> +54 9 347 6603699

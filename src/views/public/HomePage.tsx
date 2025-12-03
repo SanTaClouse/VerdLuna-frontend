@@ -22,7 +22,7 @@ const HomePage = () => {
         <meta property="og:title" content="Verdulería La Luna - Maciel, Santa Fe" />
         <meta property="og:description" content="3 sucursales con productos frescos y venta mayorista" />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://verdulerialuna.com" />
+        <link rel="canonical" href="https://laluna123.vercel.app"/>
       </Helmet>
 
       {/* Hero / Carrusel */}
@@ -48,7 +48,7 @@ const HomePage = () => {
                   consumo minorista como mayorista.
                 </p>
                 <p className="text-muted">
-                  Con <strong>3 sucursales estratégicamente ubicadas</strong> en Maciel,
+                  Con <strong>4 sucursales estratégicamente ubicadas</strong> en Maciel y Oliveros,
                   estamos siempre cerca para brindarte el mejor servicio. Trabajamos día a día
                   para llevar frescura a tu mesa y a tu negocio.
                 </p>
