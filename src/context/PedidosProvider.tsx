@@ -90,9 +90,13 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     try {
       const result = await pedidosService.create(pedidoData);
       if (result.success && result.data) {
-        setPedidos(prev => [result.data!, ...prev]);
+        // result.data ahora tiene { pedido, whatsappLink }, extraemos solo el pedido
+        setPedidos(prev => [result.data!.pedido, ...prev]);
+
+        // Retornar solo el pedido para mantener compatibilidad
+        return { success: true, data: result.data.pedido };
       }
-      return result;
+      return { success: false, error: result.error };
     } catch (err) {
       console.error('Error al agregar pedido:', err);
       return { success: false, error: (err as Error).message };

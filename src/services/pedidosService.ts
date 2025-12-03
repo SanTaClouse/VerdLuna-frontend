@@ -51,7 +51,7 @@ const pedidosService = {
   /**
    * Crear nuevo pedido
    */
-  async create(pedidoData: PedidoData): Promise<ApiResponse<Pedido>> {
+  async create(pedidoData: PedidoData): Promise<ApiResponse<{ pedido: Pedido; whatsappLink: string }>> {
     try {
       const response = await apiClient.post(ENDPOINTS.PEDIDOS.BASE, pedidoData);
       return { success: true, data: response.data.data };
@@ -88,7 +88,22 @@ const pedidosService = {
   },
 
   /**
-   * Actualizar abono parcial
+   * Actualizar abono parcial (añade el monto al precio abonado existente)
+   */
+  async actualizarPrecioAbonado(id: string | number, monto: number): Promise<ApiResponse<Pedido>> {
+    try {
+      const response = await apiClient.patch(ENDPOINTS.PEDIDOS.ACTUALIZAR_PRECIO_ABONADO(id), {
+        monto
+      });
+      return { success: true, data: response.data.data };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al actualizar precio abonado';
+      return { success: false, error: message };
+    }
+  },
+
+  /**
+   * Actualizar abono parcial (reemplaza el precio abonado completo)
    */
   async actualizarAbono(id: string | number, nuevoAbono: number): Promise<ApiResponse<Pedido>> {
     try {
@@ -125,6 +140,32 @@ const pedidosService = {
     } catch (error: any) {
       const message = error.response?.data?.message || 'Error al cargar pedidos del cliente';
       return { success: false, error: message, data: [] };
+    }
+  },
+
+  /**
+   * Obtener link de WhatsApp para un pedido
+   */
+  async getWhatsappLink(id: string | number): Promise<ApiResponse<{ whatsappLink: string }>> {
+    try {
+      const response = await apiClient.get(ENDPOINTS.PEDIDOS.WHATSAPP_LINK(id));
+      return { success: true, data: response.data.data };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al generar link de WhatsApp';
+      return { success: false, error: message };
+    }
+  },
+
+  /**
+   * Marcar link de WhatsApp como enviado
+   */
+  async marcarWhatsappEnviado(id: string | number): Promise<ApiResponse<Pedido>> {
+    try {
+      const response = await apiClient.patch(ENDPOINTS.PEDIDOS.WHATSAPP_ENVIADO(id));
+      return { success: true, data: response.data.data };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al marcar WhatsApp como enviado';
+      return { success: false, error: message };
     }
   }
 };

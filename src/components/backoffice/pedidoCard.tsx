@@ -8,6 +8,7 @@ interface PedidoCardProps {
 }
 
 const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
+
   const restante = pedido.precio - pedido.precioAbonado;
   const isPago = pedido.estado === 'Pago';
   const tieneDeuda = restante > 0;
@@ -56,8 +57,22 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
               <Badge bg={isPago ? 'success' : 'danger'} className="small">
                 {pedido.estado}
               </Badge>
+              {pedido.whatsappEnviado && (
+                <Badge bg="info" className="small ms-1">
+                  <i className="bi bi-whatsapp me-1"></i>
+                  Notificado
+                </Badge>
+              )}
             </div>
-            <p className="mb-0 text-muted small text-truncate">
+            <p className="mb-0 text-muted small" style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              lineHeight: '1.4em',
+              maxHeight: '2.8em'
+            }}>
               {pedido.descripcion}
             </p>
             {pedido.creadoPor && (
@@ -68,7 +83,7 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
             )}
           </div>
 
-          {/* Columna derecha: Precio */}
+          {/* Columna derecha: Precio y WhatsApp */}
           <div className="text-end">
             <div className={`fw-bold ${tieneDeuda ? 'text-danger' : 'text-success'}`}>
               {formatMoney(pedido.precio)}

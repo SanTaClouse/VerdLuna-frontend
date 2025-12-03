@@ -1,18 +1,33 @@
 import { Modal, Button, Row, Col, Badge, Alert } from 'react-bootstrap';
 import { useState } from 'react';
 import { Pedido } from '../../types';
+import pedidosService from '../../services/pedidosService';
+import PagoModal from './PagoModal';
+import { useWhatsappLink } from '../../hooks/useWhatsappLink';
 
 interface PedidoModalProps {
   show: boolean;
   onHide: () => void;
   pedido: Pedido | null;
   onMarcarPago: (id: number | string) => Promise<void>;
+  onWhatsappEnviado?: (pedidoId: string | number) => void;
+  onPagoActualizado?: () => void;
 }
 
-const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) => {
+const PedidoModal = ({ show, onHide, pedido, onMarcarPago, onWhatsappEnviado, onPagoActualizado }: PedidoModalProps) => {
   const [marcando, setMarcando] = useState(false);
+  const [whatsappEnviado, setWhatsappEnviado] = useState(pedido?.whatsappEnviado || false);
+  const [showPagoModal, setShowPagoModal] = useState(false);
+
+  // Hook para enviar WhatsApp (compatible con iPhone/Safari)
+  const { sendWhatsapp, loading: enviandoWhatsapp } = useWhatsappLink();
 
   if (!pedido) return null;
+
+  // Actualizar el estado cuando cambie el pedido
+  if (pedido && whatsappEnviado !== pedido.whatsappEnviado) {
+    setWhatsappEnviado(pedido.whatsappEnviado || false);
+  }
 
   const restante = pedido.precio - pedido.precioAbonado;
   const isPago = pedido.estado === 'Pago';
@@ -40,6 +55,21 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
     setMarcando(true);
     await onMarcarPago(pedido.id);
     setMarcando(false);
+    onHide();
+  };
+
+  const handleEnviarWhatsApp = async () => {
+    // Usar el hook personalizado que es compatible con iPhone/Safari
+    await sendWhatsapp(pedido.id);
+
+    // Actualizar el estado local y notificar al padre
+    setWhatsappEnviado(true);
+    onWhatsappEnviado?.(pedido.id);
+  };
+
+  const handleConfirmarPago = async (monto: number) => {
+    await pedidosService.actualizarPrecioAbonado(pedido.id, monto);
+    onPagoActualizado?.();
     onHide();
   };
 
@@ -109,12 +139,24 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
               </div>
             </Col>
             <Col xs={6}>
-              <div className="bg-light p-2 rounded text-center">
-                <small className="text-muted d-block">Abonado</small>
-                <strong className="text-success">
+              <Button
+                variant={tieneDeuda ? 'outline-success' : 'success'}
+                className="w-100 h-100 d-flex flex-column align-items-center justify-content-center p-2"
+                onClick={() => setShowPagoModal(true)}
+                disabled={!tieneDeuda}
+                style={{ minHeight: '70px' }}
+              >
+                <small className="text-muted d-block mb-1">Abonado</small>
+                <strong className={tieneDeuda ? 'text-success' : 'text-white'}>
                   {formatMoney(pedido.precioAbonado)}
                 </strong>
-              </div>
+                {tieneDeuda && (
+                  <small className="mt-1">
+                    <i className="bi bi-plus-circle me-1"></i>
+                    Registrar pago
+                  </small>
+                )}
+              </Button>
             </Col>
             {tieneDeuda && (
               <Col xs={12}>
@@ -127,6 +169,44 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
               </Col>
             )}
           </Row>
+        </div>
+
+        {/* WhatsApp */}
+        <div className="mb-3">
+          <h6 className="text-muted mb-2">
+            <i className="bi bi-whatsapp me-2"></i>
+            Notificación por WhatsApp
+          </h6>
+          {whatsappEnviado ? (
+            <Alert variant="info" className="mb-0">
+              <i className="bi bi-check-circle-fill me-2"></i>
+              <strong>Notificación enviada:</strong> El cliente fue notificado por WhatsApp sobre este pedido
+            </Alert>
+          ) : (
+            <div className="d-grid">
+              <Button
+                variant="success"
+                onClick={handleEnviarWhatsApp}
+                disabled={enviandoWhatsapp}
+                style={{
+                  backgroundColor: '#25D366',
+                  borderColor: '#25D366'
+                }}
+              >
+                {enviandoWhatsapp ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-whatsapp me-2"></i>
+                    Enviar pedido por WhatsApp
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Información técnica */}
@@ -180,6 +260,16 @@ const PedidoModal = ({ show, onHide, pedido, onMarcarPago }: PedidoModalProps) =
         )}
 
       </Modal.Body>
+
+      {/* Modal de pago parcial */}
+      <PagoModal
+        show={showPagoModal}
+        onHide={() => setShowPagoModal(false)}
+        onConfirmar={handleConfirmarPago}
+        pedidoId={pedido.id}
+        precioTotal={pedido.precio}
+        precioAbonado={pedido.precioAbonado}
+      />
     </Modal>
   );
 };

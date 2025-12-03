@@ -40,6 +40,7 @@ export interface Pedido {
   estado: EstadoPedido;
   fecha: string;
   timestamp?: string;
+  whatsappEnviado?: boolean;
   creadoPor?: {
     id: string;
     usuario: string;
