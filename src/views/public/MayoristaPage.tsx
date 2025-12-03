@@ -322,7 +322,7 @@ const MayoristaPage = () => {
               href="tel:+543476603699"
               className="btn btn-light btn-lg"
             >
-              📞 (03460) 123456
+              📞 (347) 6603699
             </a>
             <a
               href="https://wa.me/543476603699"
