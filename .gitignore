@@ -13,3 +13,4 @@ build/
 # System
 .DS_Store
 Thumbs.db
+coverage/
