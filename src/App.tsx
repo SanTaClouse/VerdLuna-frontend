@@ -1,7 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ErrorInfo } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Spinner } from 'react-bootstrap';
+import { ErrorBoundary } from 'react-error-boundary';
 
 // Context Providers
 import { AuthProvider } from './context/AuthProvider';
@@ -11,6 +12,7 @@ import { ClientesProvider } from './context/ClientesProvider';
 // Componentes de autenticación (no lazy - necesarios inmediatamente)
 import PrivateRoute from './components/auth/PrivateRoute';
 import PublicRoute from './components/auth/PublicRoute';
+import ErrorFallback from './components/ErrorFallback';
 
 // Layouts (no lazy - necesarios en casi todas las páginas)
 import PublicNavbar from './components/public/PublicNavbar';
@@ -135,12 +137,31 @@ function AppContent() {
 }
 
 function App() {
+  // Handler para errores capturados
+  const handleError = (error: Error, errorInfo: ErrorInfo) => {
+    // En producción, aquí enviarías el error a un servicio como Sentry
+    console.error('Error capturado por ErrorBoundary:', error);
+    console.error('Component stack:', errorInfo.componentStack);
+
+    // TODO: Integrar con Sentry u otro servicio de logging
+    // Sentry.captureException(error, { contexts: { react: errorInfo } });
+  };
+
   return (
-    <HelmetProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </HelmetProvider>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={handleError}
+      onReset={() => {
+        // Limpiar estados si es necesario
+        window.location.href = '/';
+      }}
+    >
+      <HelmetProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 }
 
