@@ -1,5 +1,5 @@
 import { useState, useContext, ChangeEvent, FormEvent } from "react";
-import { Form, Button, Container, Row, Col, Card, Alert, Badge } from "react-bootstrap";
+import { Form, Button, Container, Row, Col, Card, Alert } from "react-bootstrap";
 import PedidosContext from "../../context/PedidosProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -85,10 +85,6 @@ const NuevoPedidoForm = () => {
     const precio = parseFloat(form.precio);
     if (isNaN(precio) || precio <= 0) {
       nuevosErrores.precio = "El precio debe ser mayor a 0";
-    } else if (precio < 10000) {
-      nuevosErrores.precio = "El precio parece muy bajo. ¿Quisiste ingresar $" + (precio * 1000).toLocaleString('es-AR') + "?";
-    } else if (precio > 500000) {
-      nuevosErrores.precio = "El precio supera el máximo esperado ($500.000)";
     }
 
     // Validar precio abonado
@@ -108,15 +104,23 @@ const NuevoPedidoForm = () => {
     return Object.keys(nuevosErrores).length === 0;
   };
 
+  // Advertencia para precios bajos (no bloquea el envío)
+  const mostrarAdvertenciaPrecio = () => {
+    const precio = parseFloat(form.precio);
+    if (precio > 0 && precio < 10000) {
+      return (
+        <Alert variant="warning" className="mt-2">
+          ⚠️ El precio parece bajo. ¿Quisiste ingresar ${(precio * 1000).toLocaleString('es-AR')}?
+        </Alert>
+      );
+    }
+    return null;
+  };
+
   const precioRestante = Math.max(
     (parseFloat(form.precio) || 0) - (parseFloat(form.precioAbonado) || 0),
     0
   );
-
-  // Formatear precio para preview
-  const precioFormateado = form.precio
-    ? parseFloat(form.precio).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
-    : '$0,00';
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -259,16 +263,8 @@ const NuevoPedidoForm = () => {
                   </Form.Control.Feedback>
                   <Form.Text className="text-muted d-block">
                     💡 <strong>Importante:</strong> Ingresar solo números, sin puntos ni comas
-                    <br />
-                    <small>Rango esperado: $10.000 - $500.000</small>
                   </Form.Text>
-                  {form.precio && !errores.precio && (
-                    <div className="mt-2">
-                      <Badge bg="info">
-                        Vista previa: {precioFormateado}
-                      </Badge>
-                    </div>
-                  )}
+                  {mostrarAdvertenciaPrecio()}
                 </Form.Group>
               </Col>
 

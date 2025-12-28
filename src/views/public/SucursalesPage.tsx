@@ -29,8 +29,8 @@ const SucursalesPage = () => {
         sabado: "7:00 - 13:00 | 16:00 - 21:00",
         domingo: "8:00 - 13:00"
       },
-      whatsapp: "3425123456",
-      telefono: "(03460) 123456",
+      whatsapp: "3476603699",
+      telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=Entre+Ríos+811+Maciel+Santa+Fe",
       imagen: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&h=400&fit=crop"
     },
@@ -43,8 +43,8 @@ const SucursalesPage = () => {
         sabado: "7:00 - 13:00 | 16:00 - 21:00",
         domingo: "8:00 - 13:00"
       },
-      whatsapp: "3425123457",
-      telefono: "(03460) 123457",
+      whatsapp: "3476603699",
+      telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=Mendoza+530+Maciel+Santa+Fe",
       imagen: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&h=400&fit=crop"
     },
@@ -57,23 +57,23 @@ const SucursalesPage = () => {
         sabado: "7:00 - 13:00 | 16:00 - 21:00",
         domingo: "8:00 - 13:00"
       },
-      whatsapp: "3425123458",
-      telefono: "(03460) 123458",
+      whatsapp: "3476603699",
+      telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=San+Juan+810+Maciel+Santa+Fe",
       imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
     },
     {
       id: 4,
       nombre: "Luna 4",
-      direccion: "Olvieros, Santa Fe",
+      direccion: "Sarmiento 390 - Olvieros, Santa Fe",
       horarios: {
         lunesViernes: "7:00 - 13:00 | 16:00 - 21:00",
         sabado: "7:00 - 13:00 | 16:00 - 21:00",
         domingo: "8:00 - 13:00"
       },
-      whatsapp: "3425123458",
-      telefono: "(03460) 123458",
-      mapsUrl: "https://maps.google.com/?q=Oliveros+Santa+Fe",
+      whatsapp: "3476603699",
+      telefono: "(347) 6603699",
+      mapsUrl: "https://maps.google.com/?q=Sarmiento+390+Oliveros+Santa+Fe",
       imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
     }
   ];
@@ -84,7 +84,7 @@ const SucursalesPage = () => {
         <title>Sucursales | Verdulería La Luna en Maciel, Santa Fe</title>
         <meta
           name="description"
-          content="Encontrá nuestras 3 sucursales en Maciel, Santa Fe. Horarios, direcciones y contacto de Verdulería La Luna."
+          content="Encontrá nuestras sucursales en Maciel y alrededores. Horarios, direcciones y contacto de Verdulería La Luna."
         />
         <meta property="og:title" content="Sucursales - Verdulería La Luna" />
       </Helmet>
@@ -99,7 +99,7 @@ const SucursalesPage = () => {
         <Container>
           <h1 className="display-4 fw-bold mb-3">Nuestras Sucursales</h1>
           <p className="lead">
-            3 locales en Maciel para estar siempre cerca tuyo
+            4 locales en Maciel y Oliveros para estar siempre cerca tuyo
           </p>
         </Container>
       </section>
@@ -167,7 +167,7 @@ const SucursalesPage = () => {
 
                         {/* WhatsApp */}
                         <a
-                          href={`https://wa.me/${sucursal.whatsapp}`}
+                          href={`https://wa.me/549${sucursal.whatsapp}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-success btn-lg w-100"
@@ -189,7 +189,7 @@ const SucursalesPage = () => {
         <Container className="text-center">
           <h3 className="fw-bold mb-3">¿Tenés un comercio?</h3>
           <p className="lead mb-4">
-            Conocé nuestros precios mayoristas para verdulerías, almacenes y rotiserías
+            Conocé nuestros precios mayoristas para verdulerías, almacenes y supermercados
           </p>
           <Button
             href="/mayorista"

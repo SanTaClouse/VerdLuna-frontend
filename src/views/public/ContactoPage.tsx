@@ -203,6 +203,10 @@ const ContactoPage = () => {
                     <h6 className="fw-bold">Luna 3</h6>
                     <p className="text-muted mb-0">San Juan 810, Maciel</p>
                   </div>
+                  <div>
+                    <h6 className="fw-bold">Luna 4</h6>
+                    <p className="text-muted mb-0">Sarmiento 390, Oliveros</p>
+                  </div>
                 </Card.Body>
               </Card>
 
@@ -212,10 +216,10 @@ const ContactoPage = () => {
                     <i className="bi bi-telephone-fill text-success"></i> Teléfonos
                   </h4>
                   <p className="mb-2">
-                    <strong>Principal:</strong> (03460) 123456
+                    <strong>Principal:</strong> (347) 6603699
                   </p>
                   <p className="mb-0">
-                    <strong>WhatsApp:</strong> +54 9 342 5123456
+                    <strong>WhatsApp:</strong> +54 9 347 6603699
                   </p>
                 </Card.Body>
               </Card>

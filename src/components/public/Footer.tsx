@@ -16,15 +16,7 @@ const Footer = () => {
             </p>
             <div className="d-flex gap-3 mt-3">
               <a
-                href="https://facebook.com/verdulerialuna"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white fs-4"
-              >
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a
-                href="https://instagram.com/verdulerialuna"
+                href="https://www.instagram.com/verdulerialaluna1.2y3"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white fs-4"
@@ -32,7 +24,7 @@ const Footer = () => {
                 <i className="bi bi-instagram"></i>
               </a>
               <a
-                href="https://wa.me/543425123456"
+                href="https://wa.me/543476603699"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white fs-4"
@@ -74,16 +66,16 @@ const Footer = () => {
             <h5 className="fw-bold mb-3">Sucursales</h5>
             <ul className="list-unstyled text-white-50">
               <li className="mb-2">
-                <i className="bi bi-geo-alt-fill"></i> Luna 1: Entre Ríos 811
+                <i className="bi bi-geo-alt-fill"></i> Luna 1: Entre Ríos 811 - Maciel
               </li>
               <li className="mb-2">
-                <i className="bi bi-geo-alt-fill"></i> Luna 2: Mendoza 530
+                <i className="bi bi-geo-alt-fill"></i> Luna 2: Mendoza 530 - Maciel
               </li>
               <li className="mb-2">
-                <i className="bi bi-geo-alt-fill"></i> Luna 3: San Juan 810
+                <i className="bi bi-geo-alt-fill"></i> Luna 3: San Juan 810 - Maciel
               </li>
-              <li className="mt-3">
-                <small>Maciel, Santa Fe, Argentina</small>
+              <li className="mb-2">
+                <i className="bi bi-geo-alt-fill"></i> Luna 4 : Sarmiento 390 - Oliveros
               </li>
             </ul>
           </Col>
@@ -93,13 +85,13 @@ const Footer = () => {
             <h5 className="fw-bold mb-3">Contacto</h5>
             <ul className="list-unstyled text-white-50">
               <li className="mb-2">
-                <i className="bi bi-telephone-fill"></i> (03460) 123456
+                <i className="bi bi-telephone-fill"></i> 3476603699
               </li>
               <li className="mb-2">
-                <i className="bi bi-envelope-fill"></i> info@verdulerialuna.com
+                <i className="bi bi-envelope-fill"></i> pablocarrizo120@gmail.com
               </li>
               <li className="mb-2">
-                <i className="bi bi-whatsapp"></i> +54 9 342 5123456
+                <i className="bi bi-whatsapp"></i> +54 9 347 6603699
               </li>
             </ul>
 

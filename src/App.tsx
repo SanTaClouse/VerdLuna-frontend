@@ -1,35 +1,48 @@
+import { lazy, Suspense, type ErrorInfo } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { Spinner } from 'react-bootstrap';
+import { ErrorBoundary } from 'react-error-boundary';
 
 // Context Providers
 import { AuthProvider } from './context/AuthProvider';
 import { PedidosProvider } from './context/PedidosProvider';
 import { ClientesProvider } from './context/ClientesProvider';
 
-// Componentes de autenticación
+// Componentes de autenticación (no lazy - necesarios inmediatamente)
 import PrivateRoute from './components/auth/PrivateRoute';
 import PublicRoute from './components/auth/PublicRoute';
+import ErrorFallback from './components/ErrorFallback';
 
-// Layouts
+// Layouts (no lazy - necesarios en casi todas las páginas)
 import PublicNavbar from './components/public/PublicNavbar';
 import AppNavbar from './components/AppNavbar';
 import Footer from './components/public/Footer';
 
-// Views Públicas
-import HomePage from './views/public/HomePage';
-import SucursalesPage from './views/public/SucursalesPage';
-import MayoristaPage from './views/public/MayoristaPage';
-import ContactoPage from './views/public/ContactoPage';
-import LoginPage from './views/auth/LoginPage';
+// Loading component
+const PageLoader = () => (
+  <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Cargando...</span>
+    </Spinner>
+  </div>
+);
 
-// Views BackOffice
-import MisVentasPage from './views/backoffice/MisVentasPage/Pedidos/MisVentasPage';
-import NuevoPedidoPage from './views/backoffice/MisVentasPage/Pedidos/NuevoPedido';
-import ClientesPage from './views/backoffice/MisVentasPage/Clientes/ClientesPage';
-import ClienteDetallePage from './views/backoffice/MisVentasPage/Clientes/ClienteDetallePage';
+// Views Públicas - Lazy loaded
+const HomePage = lazy(() => import('./views/public/HomePage'));
+const SucursalesPage = lazy(() => import('./views/public/SucursalesPage'));
+const MayoristaPage = lazy(() => import('./views/public/MayoristaPage'));
+const ContactoPage = lazy(() => import('./views/public/ContactoPage'));
+const LoginPage = lazy(() => import('./views/auth/LoginPage'));
 
-// Página 404
-import NotFoundPage from './views/NotFoundPage';
+// Views BackOffice - Lazy loaded (solo se cargan si el usuario está autenticado)
+const MisVentasPage = lazy(() => import('./views/backoffice/MisVentasPage/Pedidos/MisVentasPage'));
+const NuevoPedidoPage = lazy(() => import('./views/backoffice/MisVentasPage/Pedidos/NuevoPedido'));
+const ClientesPage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClientesPage'));
+const ClienteDetallePage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClienteDetallePage'));
+
+// Página 404 - Lazy loaded
+const NotFoundPage = lazy(() => import('./views/NotFoundPage'));
 
 function AppContent() {
   const location = useLocation();
@@ -47,7 +60,8 @@ function AppContent() {
         isBackOffice ? <AppNavbar /> : <PublicNavbar />
       )}
 
-      <Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
         {/* ===== RUTAS PÚBLICAS ===== */}
         <Route path="/" element={<HomePage />} />
         <Route path="/sucursales" element={<SucursalesPage />} />
@@ -114,6 +128,7 @@ function AppContent() {
         {/* ===== 404 ===== */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
 
       {/* Footer solo en rutas públicas */}
       {!isBackOffice && !isLoginPage && <Footer />}
@@ -122,12 +137,31 @@ function AppContent() {
 }
 
 function App() {
+  // Handler para errores capturados
+  const handleError = (error: Error, errorInfo: ErrorInfo) => {
+    // En producción, aquí enviarías el error a un servicio como Sentry
+    console.error('Error capturado por ErrorBoundary:', error);
+    console.error('Component stack:', errorInfo.componentStack);
+
+    // TODO: Integrar con Sentry u otro servicio de logging
+    // Sentry.captureException(error, { contexts: { react: errorInfo } });
+  };
+
   return (
-    <HelmetProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </HelmetProvider>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={handleError}
+      onReset={() => {
+        // Limpiar estados si es necesario
+        window.location.href = '/';
+      }}
+    >
+      <HelmetProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 }
 
