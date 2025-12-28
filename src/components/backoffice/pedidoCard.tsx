@@ -31,7 +31,7 @@ const PedidoCard = ({ pedido, onClick }: PedidoCardProps) => {
       className="mb-2 shadow-sm border-0 pedido-card"
       style={{
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         borderLeft: `4px solid ${isPago ? '#28a745' : '#dc3545'}`,
         backgroundColor: tieneDeuda ? '#fff5f5' : '#f0fff4'
       }}

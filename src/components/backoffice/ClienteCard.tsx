@@ -21,7 +21,7 @@ const ClienteCard = ({ cliente, onClick }: ClienteCardProps) => {
       className="mb-2 shadow-sm border-0 cliente-card"
       style={{
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         borderLeft: '4px solid #28a745'
       }}
       onClick={() => onClick(cliente)}
