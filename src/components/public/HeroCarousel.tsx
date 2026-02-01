@@ -21,6 +21,7 @@ const HeroCarousel = () => {
       subtitle: "Frescura y calidad en Maciel, Santa Fe",
       description: "4 sucursales en servicio ",
       image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=600&fit=crop",
+      // image: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925170/Cajones_de_frutas_de_lejos_cjolkx.jpg",
       cta: { text: "Ver sucursales", link: "/sucursales" }
     },
     {

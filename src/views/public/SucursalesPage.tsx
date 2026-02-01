@@ -32,7 +32,7 @@ const SucursalesPage = () => {
       whatsapp: "3476603699",
       telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=Entre+Ríos+811+Maciel+Santa+Fe",
-      imagen: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&h=400&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925684/La_luna_pro_schblk.jpg"
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ const SucursalesPage = () => {
       whatsapp: "3476603699",
       telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=Mendoza+530+Maciel+Santa+Fe",
-      imagen: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&h=400&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925170/Cajones_de_frutas_de_lejos_cjolkx.jpg"
     },
     {
       id: 3,
@@ -60,7 +60,7 @@ const SucursalesPage = () => {
       whatsapp: "3476603699",
       telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=San+Juan+810+Maciel+Santa+Fe",
-      imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925162/Verduras_y_hortalizas_con_cartel_yoxq4a.jpg"
     },
     {
       id: 4,
@@ -74,7 +74,7 @@ const SucursalesPage = () => {
       whatsapp: "3476603699",
       telefono: "(347) 6603699",
       mapsUrl: "https://maps.google.com/?q=Sarmiento+390+Oliveros+Santa+Fe",
-      imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925161/Cajones_de_verduras_de_cerca_zzr1ar.jpg"
     }
   ];
 

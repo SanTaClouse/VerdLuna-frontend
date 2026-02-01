@@ -40,6 +40,7 @@ const MisVentasPage = lazy(() => import('./views/backoffice/MisVentasPage/Pedido
 const NuevoPedidoPage = lazy(() => import('./views/backoffice/MisVentasPage/Pedidos/NuevoPedido'));
 const ClientesPage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClientesPage'));
 const ClienteDetallePage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClienteDetallePage'));
+const MercaderiaPage = lazy(() => import('./views/backoffice/MisVentasPage/Mercadería/MercaderiaPage'));
 
 // Página 404 - Lazy loaded
 const NotFoundPage = lazy(() => import('./views/NotFoundPage'));
@@ -62,72 +63,83 @@ function AppContent() {
 
       <Suspense fallback={<PageLoader />}>
         <Routes>
-        {/* ===== RUTAS PÚBLICAS ===== */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/sucursales" element={<SucursalesPage />} />
-        <Route path="/mayorista" element={<MayoristaPage />} />
-        <Route path="/contacto" element={<ContactoPage />} />
+          {/* ===== RUTAS PÚBLICAS ===== */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/sucursales" element={<SucursalesPage />} />
+          <Route path="/mayorista" element={<MayoristaPage />} />
+          <Route path="/contacto" element={<ContactoPage />} />
 
-        {/* ===== LOGIN (redirige si ya está logueado) ===== */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <LoginPage />
-            </PublicRoute>
-          }
-        />
+          {/* ===== LOGIN (redirige si ya está logueado) ===== */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
 
-        {/* ===== RUTAS BACKOFFICE - PROTEGIDAS ===== */}
-        <Route
-          path="/ventas"
-          element={
-            <PrivateRoute>
-              <PedidosProvider>
-                <MisVentasPage />
-              </PedidosProvider>
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/nuevopedido"
-          element={
-            <PrivateRoute>
-              <PedidosProvider>
-                <NuevoPedidoPage />
-              </PedidosProvider>
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/clientes"
-          element={
-            <PrivateRoute>
-              <ClientesProvider>
-                <ClientesPage />
-              </ClientesProvider>
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/clientes/:id"
-          element={
-            <PrivateRoute>
-              <ClientesProvider>
+          {/* ===== RUTAS BACKOFFICE - PROTEGIDAS ===== */}
+          <Route
+            path="/ventas"
+            element={
+              <PrivateRoute>
                 <PedidosProvider>
-                  <ClienteDetallePage />
+                  <MisVentasPage />
                 </PedidosProvider>
-              </ClientesProvider>
-            </PrivateRoute>
-          }
-        />
+              </PrivateRoute>
+            }
+          />
 
-        {/* ===== 404 ===== */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route
+            path="/nuevopedido"
+            element={
+              <PrivateRoute>
+                <PedidosProvider>
+                  <NuevoPedidoPage />
+                </PedidosProvider>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/clientes"
+            element={
+              <PrivateRoute>
+                <ClientesProvider>
+                  <ClientesPage />
+                </ClientesProvider>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/mercaderia"
+            element={
+              <PrivateRoute>
+                <ClientesProvider>
+                  <MercaderiaPage />
+                </ClientesProvider>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/clientes/:id"
+            element={
+              <PrivateRoute>
+                <ClientesProvider>
+                  <PedidosProvider>
+                    <ClienteDetallePage />
+                  </PedidosProvider>
+                </ClientesProvider>
+              </PrivateRoute>
+            }
+          />
+
+          {/* ===== 404 ===== */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </Suspense>
 
       {/* Footer solo en rutas públicas */}

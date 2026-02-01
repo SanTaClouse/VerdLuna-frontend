@@ -6,8 +6,8 @@ const MisVentasPage = () => {
   return (
     <>
       <Filtros />
-      <PedidoCards />
       <Estadisticas />
+      <PedidoCards />
     </>
   );
 };

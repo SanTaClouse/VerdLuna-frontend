@@ -40,6 +40,9 @@ const AppNavbar = () => {
             <Nav.Link as={Link} to="/clientes">
               <i className="bi bi-people me-1"></i> Clientes
             </Nav.Link>
+            <Nav.Link as={Link} to="/mercaderia">
+              <i className="bi bi-box-seam me-1"></i> Mercaderia
+            </Nav.Link>
           </Nav>
 
           <Nav>

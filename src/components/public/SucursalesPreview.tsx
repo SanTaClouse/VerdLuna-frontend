@@ -17,28 +17,28 @@ const SucursalesPreview = () => {
       nombre: "Luna 1",
       direccion: "Entre Ríos 811 - Maciel",
       whatsapp: "3476603699",
-      imagen: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=400&h=300&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925684/La_luna_pro_schblk.jpg",
     },
     {
       id: 2,
       nombre: "Luna 2",
       direccion: "Mendoza 530 - Maciel",
       whatsapp: "3476603699",
-      imagen: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=300&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925170/Cajones_de_frutas_de_lejos_cjolkx.jpg",
     },
     {
       id: 3,
       nombre: "Luna 3",
       direccion: "San Juan 810 - Maciel",
       whatsapp: "3476603699",
-      imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&h=300&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925162/Verduras_y_hortalizas_con_cartel_yoxq4a.jpg"
     },
     {
       id: 4,
       nombre: "Luna 4",
       direccion: "Sarmiento 390 - Oliveros",
       whatsapp: "3476603699",
-      imagen: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=400&h=300&fit=crop"
+      imagen: "https://res.cloudinary.com/dlw9ocu3b/image/upload/v1769925161/Cajones_de_verduras_de_cerca_zzr1ar.jpg"
     }
   ];
 
