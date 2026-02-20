@@ -136,3 +136,46 @@ export interface PedidoResponse extends ApiResponse<Pedido> {
 export interface ClienteResponse extends ApiResponse<Cliente> {
   cliente?: Cliente;
 }
+
+// ========== TIPOS DE MERCADERÍA ==========
+
+export type CategoriaProducto =
+  | 'Verduras y Hortalizas'
+  | 'Frutas'
+  | 'Verduras de Hoja y Otros'
+  | 'Varios y Elaborados';
+
+export type UnidadProducto = 'kg' | 'unidad';
+
+export interface Producto {
+  id: string;
+  nombre: string;
+  categoria: CategoriaProducto;
+  unidad: UnidadProducto;
+  activo: boolean;
+  orden: number;
+}
+
+export interface StockItem {
+  producto: Producto;
+  stock: number;
+  stockId: string | null;
+  updatedAt: string | null;
+}
+
+export interface HistorialItem {
+  id: string;
+  productoId: string;
+  sucursalId: number;
+  cantidadAnterior: number;
+  cantidadNueva: number;
+  diferencia: number;
+  usuarioId: string | null;
+  createdAt: string;
+  producto: Producto;
+}
+
+export interface AjustarStockPayload {
+  cantidad: number;
+  tipo: 'set' | 'ajuste';
+}

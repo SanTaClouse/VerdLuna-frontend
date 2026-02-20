@@ -57,7 +57,17 @@ export const ENDPOINTS = {
   CONTACTO: {
     GENERAL: '/contacto',
     MAYORISTA: '/contacto/mayorista',
-  }
+  },
+
+  // Mercadería
+  MERCADERIA: {
+    PRODUCTOS: '/mercaderia/productos',
+    STOCK: (sucursalId: number) => `/mercaderia/stock/${sucursalId}`,
+    AJUSTAR_STOCK: (sucursalId: number, productoId: string) =>
+      `/mercaderia/stock/${sucursalId}/${productoId}`,
+    HISTORIAL: (sucursalId: number) => `/mercaderia/historial/${sucursalId}`,
+    SEED: '/mercaderia/seed',
+  },
 };
 
 export default API_CONFIG;

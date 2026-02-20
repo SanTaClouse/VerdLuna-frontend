@@ -3,6 +3,7 @@ export { default as authService } from './authService';
 export { default as clientesService } from './clientesService';
 export { default as pedidosService } from './pedidosService';
 export { default as contactoService } from './contactoService';
+export { default as mercaderiaService } from './mercaderiaService';
 
 // Exportar configuración y cliente
 export { default as apiClient } from '../client/client';
