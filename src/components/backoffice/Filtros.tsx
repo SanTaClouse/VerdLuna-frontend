@@ -33,7 +33,7 @@ const Filtros = () => {
           >
             <option value="todos">Todos los clientes</option>
             {clientesUnicos.map((cliente) => (
-              <option key={cliente.id} value={cliente.nombre}>
+              <option key={cliente.id} value={cliente.id}>
                 {cliente.nombre}
               </option>
             ))}

@@ -41,6 +41,7 @@ const NuevoPedidoPage = lazy(() => import('./views/backoffice/MisVentasPage/Pedi
 const ClientesPage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClientesPage'));
 const ClienteDetallePage = lazy(() => import('./views/backoffice/MisVentasPage/Clientes/ClienteDetallePage'));
 const MercaderiaPage = lazy(() => import('./views/backoffice/MisVentasPage/Mercadería/MercaderiaPage'));
+const EstadisticasPage = lazy(() => import('./views/backoffice/EstadisticasPage/EstadisticasPage'));
 
 // Página 404 - Lazy loaded
 const NotFoundPage = lazy(() => import('./views/NotFoundPage'));
@@ -51,7 +52,9 @@ function AppContent() {
   // Determinar tipo de ruta
   const isBackOffice = location.pathname.startsWith('/ventas') ||
     location.pathname.startsWith('/nuevopedido') ||
-    location.pathname.startsWith('/clientes');
+    location.pathname.startsWith('/clientes') ||
+    location.pathname.startsWith('/mercaderia') ||
+    location.pathname.startsWith('/estadisticas');
   const isLoginPage = location.pathname === '/login';
 
   return (
@@ -133,6 +136,15 @@ function AppContent() {
                     <ClienteDetallePage />
                   </PedidosProvider>
                 </ClientesProvider>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/estadisticas"
+            element={
+              <PrivateRoute>
+                <EstadisticasPage />
               </PrivateRoute>
             }
           />

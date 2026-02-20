@@ -1,4 +1,4 @@
-import { Container, Card, Spinner, Alert, Badge } from 'react-bootstrap';
+import { Container, Card, Spinner, Alert, Badge, Pagination } from 'react-bootstrap';
 import { useContext, useState } from 'react';
 import PedidosContext from '../../context/PedidosProvider';
 import PedidoCard from './pedidoCard';
@@ -17,7 +17,9 @@ const PedidoCards = () => {
     loading,
     error,
     actualizarEstadoPago,
-    cargarPedidos
+    cargarPedidos,
+    paginacion,
+    setPage,
   } = context;
 
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
@@ -64,13 +66,21 @@ const PedidoCards = () => {
   };
 
   const handleWhatsappEnviado = async () => {
-    // Recargar pedidos para actualizar el estado
     await cargarPedidos();
   };
 
   const handlePagoActualizado = async () => {
-    // Recargar pedidos para actualizar el estado
     await cargarPedidos();
+  };
+
+  // Genera los números de página visibles (ventana de ±2 alrededor de la página actual)
+  const getPageNumbers = () => {
+    const delta = 2;
+    const start = Math.max(1, paginacion.page - delta);
+    const end = Math.min(paginacion.totalPages, paginacion.page + delta);
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   };
 
   // Estados de carga
@@ -129,11 +139,65 @@ const PedidoCards = () => {
           </Card>
         ))}
 
+        {/* Paginación */}
+        {paginacion.totalPages > 1 && (
+          <div className="d-flex flex-column align-items-center gap-1 mt-3">
+            <Pagination size="sm" className="mb-0">
+              <Pagination.First
+                onClick={() => setPage(1)}
+                disabled={paginacion.page === 1}
+              />
+              <Pagination.Prev
+                onClick={() => setPage(paginacion.page - 1)}
+                disabled={paginacion.page === 1}
+              />
+
+              {paginacion.page > 3 && (
+                <>
+                  <Pagination.Item onClick={() => setPage(1)}>1</Pagination.Item>
+                  {paginacion.page > 4 && <Pagination.Ellipsis disabled />}
+                </>
+              )}
+
+              {getPageNumbers().map(pageNum => (
+                <Pagination.Item
+                  key={pageNum}
+                  active={pageNum === paginacion.page}
+                  onClick={() => setPage(pageNum)}
+                >
+                  {pageNum}
+                </Pagination.Item>
+              ))}
+
+              {paginacion.page < paginacion.totalPages - 2 && (
+                <>
+                  {paginacion.page < paginacion.totalPages - 3 && <Pagination.Ellipsis disabled />}
+                  <Pagination.Item onClick={() => setPage(paginacion.totalPages)}>
+                    {paginacion.totalPages}
+                  </Pagination.Item>
+                </>
+              )}
+
+              <Pagination.Next
+                onClick={() => setPage(paginacion.page + 1)}
+                disabled={paginacion.page === paginacion.totalPages}
+              />
+              <Pagination.Last
+                onClick={() => setPage(paginacion.totalPages)}
+                disabled={paginacion.page === paginacion.totalPages}
+              />
+            </Pagination>
+            <small className="text-muted">
+              Página {paginacion.page} de {paginacion.totalPages}
+            </small>
+          </div>
+        )}
+
         {/* Indicador de cantidad total */}
         <div className="text-center mt-3">
           <small className="text-muted">
             <i className="bi bi-receipt me-1"></i>
-            {pedidosFiltrados.length} pedido{pedidosFiltrados.length !== 1 ? 's' : ''} en total
+            Mostrando {pedidosFiltrados.length} de {paginacion.total} pedido{paginacion.total !== 1 ? 's' : ''}
           </small>
         </div>
       </Container>

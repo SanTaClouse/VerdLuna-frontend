@@ -43,6 +43,8 @@ export const ENDPOINTS = {
   PEDIDOS: {
     BASE: '/pedidos',
     BY_ID: (id: string | number) => `/pedidos/${id}`,
+    ESTADISTICAS: '/pedidos/estadisticas',
+    REPORTES: '/pedidos/reportes',
     MARCAR_PAGO: (id: string | number) => `/pedidos/${id}/marcar-pago`,
     ACTUALIZAR_ESTADO: (id: string | number) => `/pedidos/${id}/estado`,
     ACTUALIZAR_PRECIO_ABONADO: (id: string | number) => `/pedidos/${id}/precio-abonado`,

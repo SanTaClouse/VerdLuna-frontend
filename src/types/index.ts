@@ -111,6 +111,15 @@ export interface EstadisticasClientes {
   clienteTop: Cliente | null;
 }
 
+// ========== TIPOS DE PAGINACIÓN ==========
+
+export interface PaginacionState {
+  page: number;
+  totalPages: number;
+  total: number;
+  limit: number;
+}
+
 // ========== TIPOS DE RESPUESTAS DE API ==========
 
 export interface ApiResponse<T = any> {

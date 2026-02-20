@@ -1,17 +1,22 @@
 import apiClient from '../client/client';
 import { ENDPOINTS } from '../config/config';
-import { Pedido, PedidoData, FiltrosPedidos, ApiResponse } from '../types';
+import { Pedido, PedidoData, FiltrosPedidos, EstadisticasPedidos, ApiResponse } from '../types';
 
 const pedidosService = {
   /**
-   * Obtener todos los pedidos
+   * Obtener pedidos paginados con filtros opcionales
    */
-  async getAll(filtros: Partial<FiltrosPedidos> = {}): Promise<ApiResponse<Pedido[]>> {
+  async getAll(
+    filtros: Partial<FiltrosPedidos> = {},
+    page = 1,
+    limit = 20,
+  ): Promise<ApiResponse<{ data: Pedido[]; total: number; page: number; totalPages: number }>> {
     try {
       const params = new URLSearchParams();
 
+      // filtros.cliente ahora almacena el ID del cliente
       if (filtros.cliente && filtros.cliente !== 'todos') {
-        params.append('cliente', filtros.cliente);
+        params.append('clienteId', filtros.cliente);
       }
       if (filtros.estado && filtros.estado !== 'todos') {
         params.append('estado', filtros.estado);
@@ -22,16 +27,63 @@ const pedidosService = {
       if (filtros.fechaHasta) {
         params.append('fechaHasta', filtros.fechaHasta);
       }
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+
+      const response = await apiClient.get(`${ENDPOINTS.PEDIDOS.BASE}?${params.toString()}`);
+      return {
+        success: true,
+        data: {
+          data: response.data.data,
+          total: response.data.total,
+          page: response.data.page,
+          totalPages: response.data.totalPages,
+        },
+      };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al cargar pedidos';
+      return { success: false, error: message };
+    }
+  },
+
+  /**
+   * Obtener estadísticas de pedidos (sobre todos los resultados, sin paginación)
+   */
+  async getEstadisticas(filtros: Partial<FiltrosPedidos> = {}): Promise<ApiResponse<EstadisticasPedidos>> {
+    try {
+      const params = new URLSearchParams();
+
+      if (filtros.cliente && filtros.cliente !== 'todos') {
+        params.append('clienteId', filtros.cliente);
+      }
+      if (filtros.estado && filtros.estado !== 'todos') {
+        params.append('estado', filtros.estado);
+      }
+      if (filtros.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
+      if (filtros.fechaHasta) params.append('fechaHasta', filtros.fechaHasta);
 
       const url = params.toString()
-        ? `${ENDPOINTS.PEDIDOS.BASE}?${params.toString()}`
-        : ENDPOINTS.PEDIDOS.BASE;
+        ? `${ENDPOINTS.PEDIDOS.ESTADISTICAS}?${params.toString()}`
+        : ENDPOINTS.PEDIDOS.ESTADISTICAS;
 
       const response = await apiClient.get(url);
       return { success: true, data: response.data.data };
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Error al cargar pedidos';
-      return { success: false, error: message, data: [] };
+      const message = error.response?.data?.message || 'Error al cargar estadísticas';
+      return { success: false, error: message };
+    }
+  },
+
+  /**
+   * Obtener reporte completo: estadísticas, desglose mensual y top clientes
+   */
+  async getReportes(meses = 6): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.get(`${ENDPOINTS.PEDIDOS.REPORTES}?meses=${meses}`);
+      return { success: true, data: response.data.data };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al cargar reportes';
+      return { success: false, error: message };
     }
   },
 

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback, useContext, ReactNode } from 'react';
+import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { pedidosService, clientesService } from '../services';
 import {
   Pedido,
@@ -6,7 +6,8 @@ import {
   EstadisticasPedidos,
   ClienteUnico,
   PedidoData,
-  ApiResponse
+  ApiResponse,
+  PaginacionState,
 } from '../types';
 
 interface PedidosContextType {
@@ -15,7 +16,7 @@ interface PedidosContextType {
   loading: boolean;
   error: string | null;
   filtros: FiltrosPedidos;
-  setFiltros: React.Dispatch<React.SetStateAction<FiltrosPedidos>>;
+  setFiltros: (value: React.SetStateAction<FiltrosPedidos>) => void;
   cargarPedidos: () => Promise<void>;
   agregarPedido: (pedidoData: PedidoData) => Promise<ApiResponse<Pedido>>;
   actualizarEstadoPago: (pedidoId: number | string) => Promise<ApiResponse>;
@@ -23,6 +24,8 @@ interface PedidosContextType {
   eliminarPedido: (pedidoId: number | string) => Promise<ApiResponse>;
   pedidosFiltrados: Pedido[];
   estadisticas: EstadisticasPedidos;
+  paginacion: PaginacionState;
+  setPage: (page: number) => void;
 }
 
 const PedidosContext = createContext<PedidosContextType | undefined>(undefined);
@@ -31,34 +34,68 @@ interface PedidosProviderProps {
   children: ReactNode;
 }
 
+const ESTADISTICAS_VACIAS: EstadisticasPedidos = {
+  totalVentas: 0,
+  totalCobrado: 0,
+  totalPendiente: 0,
+  cantidadPagos: 0,
+  cantidadImpagos: 0,
+  cantidadTotal: 0,
+};
+
 export const PedidosProvider = ({ children }: PedidosProviderProps) => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [clientesUnicos, setClientesUnicos] = useState<ClienteUnico[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [estadisticasData, setEstadisticasData] = useState<EstadisticasPedidos>(ESTADISTICAS_VACIAS);
 
-  const [filtros, setFiltros] = useState<FiltrosPedidos>({
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const LIMIT = 20;
+
+  const [filtros, setFiltrosState] = useState<FiltrosPedidos>({
     cliente: 'todos',
     estado: 'todos',
     fechaDesde: '',
-    fechaHasta: ''
+    fechaHasta: '',
   });
 
-  // Cargar pedidos al montar
+  // Wrapper que resetea la página al cambiar filtros
+  const setFiltros = (value: React.SetStateAction<FiltrosPedidos>) => {
+    setFiltrosState(value);
+    setCurrentPage(1);
+  };
+
+  const setPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Cargar clientes una sola vez al montar
   useEffect(() => {
-    cargarPedidos();
     cargarClientes();
   }, []);
 
-  // Cargar pedidos desde el backend
+  // Recargar pedidos cuando cambia la página o los filtros
+  useEffect(() => {
+    cargarPedidos();
+  }, [currentPage, filtros]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Recargar estadísticas cuando cambian los filtros (independiente de la página)
+  useEffect(() => {
+    cargarEstadisticas();
+  }, [filtros]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const cargarPedidos = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const result = await pedidosService.getAll();
+      const result = await pedidosService.getAll(filtros, currentPage, LIMIT);
       if (result.success && result.data) {
-        setPedidos(result.data);
+        setPedidos(result.data.data);
+        setTotalPages(result.data.totalPages);
+        setTotalRecords(result.data.total);
       } else {
         setError(result.error || 'Error al cargar pedidos');
       }
@@ -70,30 +107,34 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     }
   };
 
-  // Cargar lista de clientes para los filtros
+  const cargarEstadisticas = async () => {
+    try {
+      const result = await pedidosService.getEstadisticas(filtros);
+      if (result.success && result.data) {
+        setEstadisticasData(result.data);
+      }
+    } catch (err) {
+      console.error('Error al cargar estadísticas:', err);
+    }
+  };
+
   const cargarClientes = async () => {
     try {
       const result = await clientesService.getAll();
       if (result.success && result.data) {
-        setClientesUnicos(result.data.map(c => ({
-          id: c.id,
-          nombre: c.nombre
-        })));
+        setClientesUnicos(result.data.map(c => ({ id: c.id, nombre: c.nombre })));
       }
     } catch (err) {
       console.error('Error al cargar clientes:', err);
     }
   };
 
-  // Agregar pedido
   const agregarPedido = async (pedidoData: PedidoData): Promise<ApiResponse<Pedido>> => {
     try {
       const result = await pedidosService.create(pedidoData);
       if (result.success && result.data) {
-        // result.data ahora tiene { pedido, whatsappLink }, extraemos solo el pedido
-        setPedidos(prev => [result.data!.pedido, ...prev]);
-
-        // Retornar solo el pedido para mantener compatibilidad
+        await cargarPedidos();
+        await cargarEstadisticas();
         return { success: true, data: result.data.pedido };
       }
       return { success: false, error: result.error };
@@ -103,16 +144,12 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     }
   };
 
-  // Actualizar estado de pago
   const actualizarEstadoPago = async (pedidoId: number | string): Promise<ApiResponse> => {
     try {
       const result = await pedidosService.marcarComoPago(pedidoId);
       if (result.success && result.data) {
-        setPedidos(prev =>
-          prev.map(p =>
-            p.id === pedidoId ? result.data! : p
-          )
-        );
+        setPedidos(prev => prev.map(p => p.id === pedidoId ? result.data! : p));
+        await cargarEstadisticas();
       }
       return result;
     } catch (err) {
@@ -121,14 +158,12 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     }
   };
 
-  // Actualizar abono parcial
   const actualizarAbonoParcial = async (pedidoId: number | string, nuevoAbono: number): Promise<ApiResponse> => {
     try {
       const result = await pedidosService.actualizarAbono(pedidoId, nuevoAbono);
       if (result.success && result.data) {
-        setPedidos(prev =>
-          prev.map(p => p.id === pedidoId ? result.data! : p)
-        );
+        setPedidos(prev => prev.map(p => p.id === pedidoId ? result.data! : p));
+        await cargarEstadisticas();
       }
       return result;
     } catch (err) {
@@ -137,12 +172,12 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     }
   };
 
-  // Eliminar pedido
   const eliminarPedido = async (pedidoId: number | string): Promise<ApiResponse> => {
     try {
       const result = await pedidosService.delete(pedidoId);
       if (result.success) {
-        setPedidos(prev => prev.filter(p => p.id !== pedidoId));
+        await cargarPedidos();
+        await cargarEstadisticas();
       }
       return result;
     } catch (err) {
@@ -151,49 +186,12 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     }
   };
 
-  // Filtrar pedidos (memoizado)
-  const pedidosFiltrados = useCallback((): Pedido[] => {
-    return pedidos.filter(pedido => {
-      // Obtener el nombre del cliente (puede ser objeto o string)
-      const nombreCliente = typeof pedido.cliente === 'object'
-        ? pedido.cliente.nombre
-        : pedido.cliente;
-
-      if (filtros.cliente !== 'todos' && nombreCliente !== filtros.cliente) {
-        return false;
-      }
-      if (filtros.estado !== 'todos' && pedido.estado !== filtros.estado) {
-        return false;
-      }
-      if (filtros.fechaDesde && pedido.fecha < filtros.fechaDesde) {
-        return false;
-      }
-      if (filtros.fechaHasta && pedido.fecha > filtros.fechaHasta) {
-        return false;
-      }
-      return true;
-    });
-  }, [pedidos, filtros]);
-
-  // Calcular estadísticas
-  const estadisticas = useCallback((): EstadisticasPedidos => {
-    const filtrados = pedidosFiltrados();
-
-    const totalVentas = filtrados.reduce((sum, p) => sum + Number(p.precio || 0), 0);
-    const totalCobrado = filtrados.reduce((sum, p) => sum + Number(p.precioAbonado || 0), 0);
-    const totalPendiente = totalVentas - totalCobrado;
-    const cantidadPagos = filtrados.filter(p => p.estado === 'Pago').length;
-    const cantidadImpagos = filtrados.filter(p => p.estado === 'Impago').length;
-
-    return {
-      totalVentas,
-      totalCobrado,
-      totalPendiente,
-      cantidadPagos,
-      cantidadImpagos,
-      cantidadTotal: filtrados.length
-    };
-  }, [pedidosFiltrados]);
+  const paginacion: PaginacionState = {
+    page: currentPage,
+    totalPages,
+    total: totalRecords,
+    limit: LIMIT,
+  };
 
   const value: PedidosContextType = {
     pedidos,
@@ -207,8 +205,10 @@ export const PedidosProvider = ({ children }: PedidosProviderProps) => {
     actualizarEstadoPago,
     actualizarAbonoParcial,
     eliminarPedido,
-    pedidosFiltrados: pedidosFiltrados(),
-    estadisticas: estadisticas()
+    pedidosFiltrados: pedidos,
+    estadisticas: estadisticasData,
+    paginacion,
+    setPage,
   };
 
   return (
