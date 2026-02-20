@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navbar, Container, Nav, NavDropdown, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
@@ -6,17 +7,20 @@ import LogoLuna from "../assets/laluna-logo.png";
 const AppNavbar = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
+  const closeMenu = () => setExpanded(false);
+
   return (
-    <Navbar bg="white" variant="light" expand="sm" collapseOnSelect className="shadow-sm">
+    <Navbar bg="white" variant="light" expand="sm" expanded={expanded} onToggle={setExpanded} className="shadow-sm">
       <Container>
         {/* Logo / Marca */}
-        <Navbar.Brand as={Link} to="/ventas">
+        <Navbar.Brand as={Link} to="/ventas" onClick={closeMenu}>
           <img
             src={LogoLuna}
             width="130"
@@ -31,19 +35,19 @@ const AppNavbar = () => {
         {/* Links y dropdown */}
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/ventas">
+            <Nav.Link as={Link} to="/ventas" onClick={closeMenu}>
               <i className="bi bi-receipt me-1"></i> Ventas
             </Nav.Link>
-            <Nav.Link as={Link} to="/nuevopedido">
+            <Nav.Link as={Link} to="/nuevopedido" onClick={closeMenu}>
               <i className="bi bi-plus-circle me-1"></i> Nuevo Pedido
             </Nav.Link>
-            <Nav.Link as={Link} to="/clientes">
+            <Nav.Link as={Link} to="/clientes" onClick={closeMenu}>
               <i className="bi bi-people me-1"></i> Clientes
             </Nav.Link>
-            <Nav.Link as={Link} to="/mercaderia">
+            <Nav.Link as={Link} to="/mercaderia" onClick={closeMenu}>
               <i className="bi bi-box-seam me-1"></i> Mercaderia
             </Nav.Link>
-            <Nav.Link as={Link} to="/estadisticas">
+            <Nav.Link as={Link} to="/estadisticas" onClick={closeMenu}>
               <i className="bi bi-bar-chart-line me-1"></i> Reportes
             </Nav.Link>
           </Nav>
