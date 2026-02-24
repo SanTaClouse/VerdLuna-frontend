@@ -4,6 +4,8 @@ import {
   Container, Row, Col, Card, Button, Form, Alert,
   Badge, Tab, Tabs, Table
 } from 'react-bootstrap';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import ClientesContext from '../../../../context/ClientesProvider';
 import { pedidosService } from '../../../../services';
 import type { Pedido } from '../../../../types';
@@ -21,6 +23,19 @@ interface Mensaje {
   texto: string;
 }
 
+const PRESETS_FECHA = [
+  { label: 'Última semana', dias: 7 },
+  { label: 'Último mes', dias: 30 },
+  { label: 'Últimos 2 meses', dias: 60 },
+  { label: 'Últimos 3 meses', dias: 90 },
+];
+
+const getDesdePreset = (dias: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() - dias);
+  return d.toISOString().split('T')[0];
+};
+
 const ClienteDetallePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -37,6 +52,10 @@ const ClienteDetallePage = () => {
 
   const [pedidosCliente, setPedidosCliente] = useState<Pedido[]>([]);
   const [loadingPedidos, setLoadingPedidos] = useState(true);
+
+  // Filtros locales del historial
+  const [estadoFiltro, setEstadoFiltro] = useState('todos');
+  const [presetDias, setPresetDias] = useState<number | null>(null);
 
   const [modoEdicion, setModoEdicion] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -95,7 +114,7 @@ const ClienteDetallePage = () => {
 
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
-    return dateString.split('T')[0]
+    return dateString.split('T')[0];
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -156,12 +175,113 @@ const ClienteDetallePage = () => {
     window.open(`https://wa.me/54${cliente.telefono}`, '_blank');
   };
 
-  // Calcular estadísticas
+  // Filtrado local del historial
+  const pedidosFiltrados = pedidosCliente
+    .filter(p => estadoFiltro === 'todos' || p.estado === estadoFiltro)
+    .filter(p => {
+      if (!presetDias) return true;
+      const desde = getDesdePreset(presetDias);
+      return (p.fecha || '').split('T')[0] >= desde;
+    })
+    .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+
+  // Estadísticas globales (todos los pedidos del cliente)
   const totalPedidos = pedidosCliente.length;
   const totalFacturado = pedidosCliente.reduce((sum, p) => sum + Number(p.precio || 0), 0);
   const totalCobrado = pedidosCliente.reduce((sum, p) => sum + Number(p.precioAbonado || 0), 0);
   const totalPendiente = totalFacturado - totalCobrado;
   const promedioCompra = totalPedidos > 0 ? totalFacturado / totalPedidos : 0;
+
+  const limpiarFiltrosHistorial = () => {
+    setEstadoFiltro('todos');
+    setPresetDias(null);
+  };
+
+  const exportarPDF = () => {
+    const doc = new jsPDF();
+    const hoy = new Date().toLocaleDateString('es-AR');
+
+    // Encabezado
+    doc.setFontSize(18);
+    doc.setTextColor(33, 37, 41);
+    doc.text('Historial de Pedidos', 14, 20);
+
+    doc.setFontSize(13);
+    doc.setTextColor(13, 110, 253);
+    doc.text(cliente.nombre, 14, 29);
+
+    doc.setFontSize(9);
+    doc.setTextColor(108, 117, 125);
+    doc.text(`Dirección: ${cliente.direccion || '-'}`, 14, 36);
+    doc.text(`Teléfono: ${cliente.telefono || '-'}`, 14, 41);
+    doc.text(`Generado el: ${hoy}`, 14, 46);
+
+    // Descripción del filtro aplicado
+    const filtroDesc: string[] = [];
+    if (estadoFiltro !== 'todos') filtroDesc.push(`Estado: ${estadoFiltro}`);
+    if (presetDias) {
+      const preset = PRESETS_FECHA.find(p => p.dias === presetDias);
+      if (preset) filtroDesc.push(`Período: ${preset.label}`);
+    }
+    if (filtroDesc.length > 0) {
+      doc.setFontSize(8);
+      doc.setTextColor(220, 53, 69);
+      doc.text(`Filtros: ${filtroDesc.join(' · ')}`, 14, 52);
+    }
+
+    // Resumen de los pedidos filtrados
+    const totalFiltrado = pedidosFiltrados.reduce((s, p) => s + Number(p.precio || 0), 0);
+    const cobradoFiltrado = pedidosFiltrados.reduce((s, p) => s + Number(p.precioAbonado || 0), 0);
+    const pendienteFiltrado = totalFiltrado - cobradoFiltrado;
+
+    const startResumen = filtroDesc.length > 0 ? 59 : 53;
+
+    doc.setFontSize(9);
+    doc.setTextColor(33, 37, 41);
+    doc.text(
+      `Pedidos: ${pedidosFiltrados.length}   |   Facturado: ${formatMoney(totalFiltrado)}   |   Cobrado: ${formatMoney(cobradoFiltrado)}   |   Pendiente: ${formatMoney(pendienteFiltrado)}`,
+      14,
+      startResumen
+    );
+
+    // Tabla
+    autoTable(doc, {
+      startY: startResumen + 6,
+      head: [['Fecha', 'Descripción', 'Total', 'Abonado', 'Pendiente', 'Estado']],
+      body: pedidosFiltrados.map(p => [
+        formatDate(p.fecha),
+        p.descripcion || '-',
+        formatMoney(Number(p.precio || 0)),
+        formatMoney(Number(p.precioAbonado || 0)),
+        formatMoney(Number(p.precio || 0) - Number(p.precioAbonado || 0)),
+        p.estado,
+      ]),
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [13, 110, 253], textColor: 255, fontStyle: 'bold' },
+      columnStyles: {
+        0: { cellWidth: 22 },
+        1: { cellWidth: 65 },
+        2: { halign: 'right', cellWidth: 28 },
+        3: { halign: 'right', cellWidth: 28 },
+        4: { halign: 'right', cellWidth: 28 },
+        5: { halign: 'center', cellWidth: 18 },
+      },
+      alternateRowStyles: { fillColor: [248, 249, 250] },
+      didDrawCell: (data) => {
+        if (data.column.index === 5 && data.section === 'body') {
+          const estado = pedidosFiltrados[data.row.index]?.estado;
+          if (estado === 'Pago') {
+            doc.setTextColor(25, 135, 84);
+          } else {
+            doc.setTextColor(255, 193, 7);
+          }
+        }
+      },
+    });
+
+    const nombreArchivo = `${cliente.nombre.replace(/\s+/g, '_')}_pedidos_${hoy.replace(/\//g, '-')}.pdf`;
+    doc.save(nombreArchivo);
+  };
 
   return (
     <div className="bg-light min-vh-100 pb-5">
@@ -355,7 +475,7 @@ const ClienteDetallePage = () => {
           </Card.Body>
         </Card>
 
-        {/* Estadísticas */}
+        {/* Estadísticas globales */}
         <Row className="g-3 mb-4">
           <Col xs={6} md={3}>
             <Card className="text-center shadow-sm h-100">
@@ -409,13 +529,75 @@ const ClienteDetallePage = () => {
             {/* Tab: Historial de pedidos */}
             <Tab eventKey="historial" title="📦 Historial de Pedidos">
               <Card.Body>
+
+                {/* Filtros del historial */}
+                <div className="p-3 bg-light rounded mb-3">
+                  <Row className="align-items-end g-2">
+                    <Col xs={12} sm={4}>
+                      <Form.Label className="small text-muted mb-1">Estado</Form.Label>
+                      <Form.Select
+                        size="sm"
+                        value={estadoFiltro}
+                        onChange={e => setEstadoFiltro(e.target.value)}
+                      >
+                        <option value="todos">Todos</option>
+                        <option value="Pago">Pagos ✅</option>
+                        <option value="Impago">Impagos ⚠️</option>
+                      </Form.Select>
+                    </Col>
+                    <Col xs={12} sm={5}>
+                      <Form.Label className="small text-muted mb-1">Período</Form.Label>
+                      <div className="d-flex flex-wrap gap-1">
+                        {PRESETS_FECHA.map(({ label, dias }) => (
+                          <Button
+                            key={dias}
+                            size="sm"
+                            variant={presetDias === dias ? 'primary' : 'outline-primary'}
+                            onClick={() => setPresetDias(presetDias === dias ? null : dias)}
+                          >
+                            {label}
+                          </Button>
+                        ))}
+                      </div>
+                    </Col>
+                    <Col xs={12} sm={3} className="d-flex gap-2 align-items-end">
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        onClick={limpiarFiltrosHistorial}
+                        className="flex-grow-1"
+                      >
+                        🔄 Limpiar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={exportarPDF}
+                        disabled={loadingPedidos || pedidosFiltrados.length === 0}
+                        className="flex-grow-1"
+                      >
+                        <i className="bi bi-file-earmark-pdf me-1"></i>PDF
+                      </Button>
+                    </Col>
+                  </Row>
+                  {pedidosFiltrados.length > 0 && (
+                    <div className="mt-2 small text-muted">
+                      Mostrando <strong>{pedidosFiltrados.length}</strong> pedido{pedidosFiltrados.length !== 1 ? 's' : ''} —
+                      Facturado: <strong>{formatMoney(pedidosFiltrados.reduce((s, p) => s + Number(p.precio || 0), 0))}</strong> —
+                      Pendiente: <strong>{formatMoney(pedidosFiltrados.reduce((s, p) => s + Number(p.precio || 0) - Number(p.precioAbonado || 0), 0))}</strong>
+                    </div>
+                  )}
+                </div>
+
                 {loadingPedidos ? (
                   <Alert variant="secondary" className="text-center">
                     Cargando historial...
                   </Alert>
-                ) : pedidosCliente.length === 0 ? (
+                ) : pedidosFiltrados.length === 0 ? (
                   <Alert variant="info" className="text-center">
-                    Este cliente aún no tiene pedidos registrados
+                    {pedidosCliente.length === 0
+                      ? 'Este cliente aún no tiene pedidos registrados'
+                      : 'No hay pedidos para los filtros seleccionados'}
                   </Alert>
                 ) : (
                   <div className="table-responsive">
@@ -430,25 +612,23 @@ const ClienteDetallePage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {pedidosCliente
-                          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
-                          .map((pedido) => (
-                            <tr key={pedido.id}>
-                              <td className="small">{formatDate(pedido.fecha)}</td>
-                              <td className="small">{pedido.descripcion}</td>
-                              <td className="text-end fw-bold">
-                                {formatMoney(pedido.precio)}
-                              </td>
-                              <td className="text-end">
-                                {formatMoney(pedido.precioAbonado)}
-                              </td>
-                              <td className="text-center">
-                                <Badge bg={pedido.estado === 'Pago' ? 'success' : 'warning'}>
-                                  {pedido.estado}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
+                        {pedidosFiltrados.map((pedido) => (
+                          <tr key={pedido.id}>
+                            <td className="small">{formatDate(pedido.fecha)}</td>
+                            <td className="small">{pedido.descripcion}</td>
+                            <td className="text-end fw-bold">
+                              {formatMoney(pedido.precio)}
+                            </td>
+                            <td className="text-end">
+                              {formatMoney(pedido.precioAbonado)}
+                            </td>
+                            <td className="text-center">
+                              <Badge bg={pedido.estado === 'Pago' ? 'success' : 'warning'}>
+                                {pedido.estado}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </Table>
                   </div>
