@@ -5,7 +5,8 @@ import {
   Badge, Tab, Tabs, Table
 } from 'react-bootstrap';
 import ClientesContext from '../../../../context/ClientesProvider';
-import PedidosContext from '../../../../context/PedidosProvider';
+import { pedidosService } from '../../../../services';
+import type { Pedido } from '../../../../types';
 
 interface FormData {
   nombre: string;
@@ -25,20 +26,17 @@ const ClienteDetallePage = () => {
   const navigate = useNavigate();
 
   const clientesContext = useContext(ClientesContext);
-  const pedidosContext = useContext(PedidosContext);
 
   if (!clientesContext) {
     throw new Error('ClienteDetallePage must be used within ClientesProvider');
   }
 
-  if (!pedidosContext) {
-    throw new Error('ClienteDetallePage must be used within PedidosProvider');
-  }
-
   const { obtenerClientePorId, actualizarCliente } = clientesContext;
-  const { pedidos } = pedidosContext;
 
   const cliente = obtenerClientePorId(id || '');
+
+  const [pedidosCliente, setPedidosCliente] = useState<Pedido[]>([]);
+  const [loadingPedidos, setLoadingPedidos] = useState(true);
 
   const [modoEdicion, setModoEdicion] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -63,6 +61,16 @@ const ClienteDetallePage = () => {
     }
   }, [cliente]);
 
+  useEffect(() => {
+    if (!id) return;
+    setLoadingPedidos(true);
+    pedidosService.getByCliente(id).then((result) => {
+      if (result.success && result.data) {
+        setPedidosCliente(result.data);
+      }
+    }).finally(() => setLoadingPedidos(false));
+  }, [id]);
+
   if (!cliente) {
     return (
       <Container className="my-5 text-center">
@@ -76,9 +84,6 @@ const ClienteDetallePage = () => {
       </Container>
     );
   }
-
-  // Filtrar pedidos de este cliente
-  const pedidosCliente = pedidos.filter(p => p.clienteId === id);
 
   const formatMoney = (amount: number): string => {
     return new Intl.NumberFormat('es-AR', {
@@ -404,7 +409,11 @@ const ClienteDetallePage = () => {
             {/* Tab: Historial de pedidos */}
             <Tab eventKey="historial" title="📦 Historial de Pedidos">
               <Card.Body>
-                {pedidosCliente.length === 0 ? (
+                {loadingPedidos ? (
+                  <Alert variant="secondary" className="text-center">
+                    Cargando historial...
+                  </Alert>
+                ) : pedidosCliente.length === 0 ? (
                   <Alert variant="info" className="text-center">
                     Este cliente aún no tiene pedidos registrados
                   </Alert>
